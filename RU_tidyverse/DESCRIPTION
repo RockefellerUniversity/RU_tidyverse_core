@@ -1,4 +1,5 @@
-Package: RU_tidyverse_core
+Package: RU_tidyverse
+
 Type: Package
 Title: Tidyverse core components training
 Version: 0.1.1
