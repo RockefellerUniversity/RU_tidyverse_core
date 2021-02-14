@@ -557,7 +557,6 @@ if(params$isSlides == "yes"){
 
 ```
 
-
 ---
 ## Joining
 Often you have two dataframes and you want to join them together. Data frames can be joined on a shared variable _a.k.a._ a key. We want this key to be unique i.e. ENTREZ ID. 
@@ -605,7 +604,7 @@ left_join(tidy_counts, counts_metadata, by = c("ENTREZ" = "ID"))
 Now the counts_metadata tibble is the backbone for this join. Many of the keys (i.e. ENTREZID) in this tibble do not have matches in the tidy_counts_tibble. Anything without a match is filled in with NA. 
 ```{r}
 tidy_counts_expressed <- right_join(tidy_counts, counts_metadata, by = c("ENTREZ" = "ID"))
-tail(tidy_counts_expressed)
+tidy_counts_expressed %>% tail()
 ```
 
 ---
@@ -631,20 +630,31 @@ anti_join(counts_metadata, tidy_counts, by = c("ID" = "ENTREZ") )
 
 ```
 
----
-## CHALLENGE: Time for an exercise!
-
-Exercise reviewing dplyr and joining can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/exercises/EX7_RU_tidyverse_dplyr_join.html)
 
 ---
-### Answers to exercise.
+```{r, results='asis',include=TRUE,echo=FALSE}
+if(params$isSlides == "yes"){
+  cat("class: inverse, center, middle
 
-Answers can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX7_ANSWERS_RU_tidyverse_dplyr_join.html)
+# Quick manipulate data with dplyr
 
-R code for solutions can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX7_ANSWERS_RU_tidyverse_dplyr_join.R)
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=720px></html> 
 
 ---
-# dplyr
+"    
+  )
+}else{
+  cat("# Quickly manipulate data with dplyr
+---
+"    
+  )
+  
+}
+
+```
+
+---
+## dplyr
 This package contains a variety of tools to access and manipulate dataframes.  
 
 They have a common rationale:
@@ -656,7 +666,7 @@ They have a common rationale:
 **Select** allows you to make a vector from a specific variable
 ```{r}
 # Select one variable (common_name)
-select(df1, common_name)
+dplyr::select(tidy_counts, counts)
 ```
 
 ---
