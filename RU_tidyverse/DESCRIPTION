@@ -9,7 +9,7 @@ Description: This pacakge shows an example framework to build a teaching course.
 License: What license is it under?
 LazyData: TRUE
 biocViews: Training
-Depends: methods, ggplot2, rmarkdown, rio
+Depends: methods, ggplot2, rmarkdown, org.Hs.eg.db, TxDb.Hsapiens.UCSC.hg19.knownGene, tidyverse, magrittr
 Suggests: knitr,
     rmarkdown,
     testthat,
