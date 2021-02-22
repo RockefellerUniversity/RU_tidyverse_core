@@ -22,6 +22,9 @@ params:
 ---
 
 ```{r setup, include=FALSE}
+library(org.Hs.eg.db)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+
 knitr::opts_chunk$set(echo = TRUE)
 
 knitr::opts_knit$set(root.dir = "RU_tidyverse/inst/extdata/")
@@ -525,9 +528,10 @@ tidier_counts %>% .[.$counts > 0,]
 
 ```
 
-%<>% is a modification of the pipe. This is a two way pipe that will carry the variable forward, and once expression is resolved, the result then gets assigned back to the orgonal variable.
+%<>% is a modification of the pipe. This is a two way pipe that will carry the variable forward, and once expression is resolved, the result then gets assigned back to the original variable.
 
 ````{r}
+library(magrittr)
 tidier_counts %<>% .[.$counts > 0,]
 tidier_counts
 ```
@@ -566,15 +570,17 @@ Often you have two dataframes and you want to join them together. Data frames ca
 ```{r}
 tidy_counts
 ```
+
 ---
 ## dplyr::inner_join - Merging dataframes
 ```{r}
 counts_metadata
 ```
+
 ---
 ## dplyr::inner_join - Merging dataframes
 ```{r}
-inner_join(tidy_counts, counts_metadata, by = c("ENTREZ" = "ID"))
+tidy_counts_meta <- inner_join(tidy_counts, counts_metadata, by = c("ENTREZ" = "ID"))
 ```
 
 ---
@@ -621,6 +627,7 @@ Semi join only keeps observations in x that are matched in y. y is only used as 
 ```{r}
 semi_join(counts_metadata, tidy_counts, by = c("ID" = "ENTREZ") )
 ```
+
 ---
 ## dplyr::anti_join
 Anti join only keeps observations in x that are not matched in y. y is only used as a reference and is not in output
@@ -662,316 +669,246 @@ They have a common rationale:
 ![dplyr](./imgs/dplyr.png)
 
 ---
-## dplyr::select - (pt1)
-**Select** allows you to make a vector from a specific variable
+## dplyr::select
+**select** allows you to work with the columns in your tibble. 
+At its most basic **select** allows you to make a vector from a specific variable
 ```{r}
-# Select one variable (common_name)
-dplyr::select(tidy_counts, counts)
+select(tidy_counts_meta , counts)
 ```
 
 ---
-## dplyr::select - (pt2)
-**Select** allows you to make a dataframe from several variables
+## dplyr::select
+**select** allows you to make a dataframe from several variables
 ```{r}
-# Select two variables (age_classbylength and common_name)
-select(df1, age_classbylength, common_name)
+select(tidy_counts_meta, counts, ENTREZ)
 ```
 
 ---
-## dplyr::select - (pt3)
-**Select** allows you to make a dataframe excluding a variable
+## dplyr::select
+**select** allows you to make a dataframe excluding a variable
 ```{r}
-# Select all but one variable (length_mm)
-select(df1,-length_mm)
+select(tidy_counts_meta, -Sample)
 ```
 
 ---
-## dplyr::select - (pt4)
-**Select** allows you to make a dataframe from a range of variables
+## dplyr::select
+**select** allows you to make a dataframe from a range of variables
 ```{r}
-# Select all a range of contiguous varibles (common_name:length_mm)
-select(df1, common_name:length_mm)
+select(tidy_counts_meta, CellType:SYMBOL)
 ```
 
 ---
-## dplyr::filter - (pt1)
-__Filter__ allows you to access observations based on a criteria
+## dplyr::filter
+**filter** allows you to work with the rows in your tibble. 
+Through __filter__ you can access observations based on criteria that produces a logical.
 ```{r}
-# Filter all observation where the variable common_name is Sockeye salmon
-filter(df1, common_name == 'Sockeye salmon')
+filter(tidy_counts_meta, Sample == 'CD34_1')
 ```
 
 ---
-## dplyr::filter - (pt2)
-__Filter__ allows you to access observations based on several criteria
+## dplyr::filter
+Here we use __filter__ to access observations based on several criteria.
 ```{r}
-# Filter all observations where the variable common_name is either Sockeye salmon or Chinook Salmon
-filter(df1, common_name %in% c('Sockeye salmon', 'Chinook salmon'))
+filter(tidy_counts_meta, Sample %in% c('CD34_1', 'ORTHO_1'))
 ```
 
+
 ---
-## dplyr::filter - (pt3)
-__Filter__ allows you to access observations based on specific strings
+## dplyr::filter
+Similarly we can use __Filter__ to access observations based on numerical operators
 ```{r}
-# Filter all observations where the variable common_name ends with 'salmon'. To do this we use stringr function str_ends recognise strings that end with 'salmon'.
-filter(df1, str_ends(common_name, 'salmon'))
+filter(tidy_counts_meta, counts > 0)
 ```
 
+
 ---
-## dplyr::filter - (pt4)
-__Filter__ allows you to access observations based on operators
+## dplyr::arrange
+_Arrange_ sorts the dataframe based on a specific variable, in ascending order. 
 ```{r}
-# Filter all observations where the variable length_mm is greater than 200 or less than 120
-filter(df1, length_mm > 200 | length_mm < 120)
+arrange(tidy_counts_meta, counts)
 ```
 
 ---
-## CHALLENGE: Time for an exercise!
-
-Exercise on dplyr's select and filter can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/exercises/EX1_RU_tidyverse_dplyr_select_and_filter.html)
-
----
-### Answers to exercise.
-
-Answers can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX1_ANSWERS_RU_tidyverse_dplyr_select_and_filter.html)
-
-R code for solutions can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX1_ANSWERS_RU_tidyverse_dplyr_select_and_filter.R)
-
----
-## dplyr::arrange - (pt1)
-_Arrange_ sorts the dataframe based on a specific variable
+## dplyr::arrange
+_Arrange_ can sort based on multiple variables using the order provided. We can also use the desc() function to change the order to descending.  
 ```{r}
-# Arrange the data based on the variable length_mm
-arrange(df1, length_mm)
+
+arrange(tidy_counts_meta, CellType, desc(counts))
 ```
+
 ---
-## dplyr::arrange - (pt2)
-_Arrange_ sorts the dataframe based on specific variables
+## dplyr::mutate
+_Mutate_ creates a new column based on some form of computation. Here we are adding a z-score for the counts. 
 ```{r}
-# Arrange the data first based on the variable common_name, 
-# then secondly based on length_mm in a descending order.
-arrange(df1, common_name, desc(length_mm))
+mutate(tidy_counts_meta, scale(counts))
 ```
 
 ---
-## dplyr::mutate - (pt1)
-_Mutate_ creates a new variable based on some form of computation
+## dplyr::mutate
+_Mutate_  can be used to create a named variable in much the same way. 
 ```{r}
-# A new variable is created based on the calculation of the
-# z-score of the variable IGF1_ng_ml using scale()
-mutate(df1, scale(IGF1_ng_ml))
+mutate(tidy_counts_meta, count_zscore = scale(counts))
 ```
+
+
 ---
-## dplyr::mutate - (pt2)
-_Mutate_ creates a named variable based on some form of computation
+## dplyr::summarize
+_Summarize_ applies aggregating or summary function to a group i.e. counting. Lets see how many genes we have no counts for in each sample. First we will generate a table of genes with no counts. 
+
 ```{r}
-# A new variable is created called IGFngml_zscore, based on the 
-# calculation of the z-score of the variable IGF1_ng_ml using scale()
-mutate(df1, IGFngml_zscore = scale(IGF1_ng_ml))
+filter(tidy_counts_meta, counts == 0)
 ```
 
 ---
-## CHALLENGE: Time for an exercise!
+## dplyr::summarize
+Now we have some data to play with, we do the first key step in summarization: group_by. This adds the *Group* property. When we summarize it will be within these groups i.e. in this case its within Sample. 
 
-Exercise on dplyr's arrange and mutate can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/exercises/EX2_RU_tidyverse_dplyr_arrange_and_mutate.html)
-
----
-### Answers to exercise.
-
-Answers can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX2_ANSWERS_RU_tidyverse_dplyr_arrange_and_mutate.html)
-
-R code for solutions can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX2_ANSWERS_RU_tidyverse_dplyr_arrange_and_mutate.R)
-
----
-## dplyr::summarize - (pt1)
-_Summarize_ applies aggregating or summary function to a group i.e. counting
 ```{r}
-# First we define the common_name as a group. 
-df1_byname <- group_by(df1, common_name)
-
-# Summarise is used to count over the grouped common_names
-summarise(df1_byname, count = n())
+filter(tidy_counts_meta, counts == 0) %>%
+  group_by(Sample) 
 ```
+
 ---
-## dplyr::summarize - (pt2)
-_Summarize_ applies aggregating or summary function to a group i.e. means
+## dplyr::summarize
+Once the tibble has group information we can then summarize over the these groups. We can use the *n()* function to count how many observations there are for each member of our group, Samples.
+
 ```{r}
-# Summarise is used to calculate mean IGF1_ng_ml over the
-# grouped common_names
-summarise(df1_byname, IGF1_ng_ml_ave = mean(IGF1_ng_ml, na.rm = T))
+filter(tidy_counts_expressed, counts == 0) %>%
+  group_by(Sample) %>%
+  summarise(n())
 ```
 
 ---
-## dplyr::group_by - (pt1)
-_Grouping_ can also help filter within groups
+## dplyr::summarize
+We can use _Summarize_ to apply more complex aggregating or summary functions i.e. mean. In this case we will calculate the mean gene counts across conditions. 
 ```{r}
-# Filter observations with the 2 smallest length_mm for each grouped common_names
-filter(df1_byname, rank(length_mm) <= 2)
+tidy_counts_meta %>%
+  group_by(ENTREZ) %>%
+  summarise(counts_mean = mean(counts))
 ```
+
 ---
-## dplyr::group_by - (pt2)
-_Grouping_ can also help filter within groups
+## dplyr::summarize
+We can use also use multiple groups, for *group_by*. We can use this to generate a more useful mean; the mean counts in genes per CellType. 
 ```{r}
-# Filter observations with at least 5 for each grouped common_names
-filter(df1_byname, n() > 5)
+tidy_counts %>%
+  group_by(ENTREZ, CellType) %>%
+  summarise(counts_mean = mean(counts))
 ```
+
 ---
-## dplyr::group_by - (pt3)
-_Grouping_ creates a new variable based on some form of computation within the group
+## dplyr::group_by
+_Grouping_ can also be used to help filter within groups. Here we use order to get the genes with the top 3 amount of counts.
 ```{r}
-# A new variable is created using z-score within the grouped common_names
-mutate(df1_byname, IGFngml_zscore = scale(IGF1_ng_ml))
+tidy_counts_meta %>%
+  group_by(Sample) %>%
+  filter(order(counts, decreasing=T) <= 3)
 ```
 
 ---
-## CHALLENGE: Time for an exercise!
-
-Exercise on dplyr's grouping and summarize can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/exercises/EX3_RU_tidyverse_dplyr_group_and_summarize.html)
-
----
-### Answers to exercise.
-
-Answers can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX3_ANSWERS_RU_tidyverse_dplyr_group_and_summarize.html)
-
-R code for solutions can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX3_ANSWERS_RU_tidyverse_dplyr_group_and_summarize.R)
-
----
-# Piping to string functions together
-
-Piping was allows you to pass the result from one expression directly into another.  
-magrittR package developed the %>% pipe which is integral to the tidy way of formatting code
-
-The pattern is similar but now follows a specific logical flow:
-
-![dplyr](./imgs/dplyr_pipe.png)
----
-## Piping vs. not piping
+## dplyr::group_by
+We can stitch this together to do more complicated operations. In this case I am filtering to observations without 0 counts. I then am grouping by CellType and ENTREZ.
 ```{r}
-# Without pipe
-df1_byname <- group_by(df1, common_name)
-summarise(df1_byname, IGF1_ng_ml_ave = mean(IGF1_ng_ml, na.rm=T))
-
-# With pipe
-df1 %>% 
-  group_by(common_name) %>% 
-  summarise(IGF1_ng_ml_ave = mean(IGF1_ng_ml, na.rm=T))
+tidy_counts_meta %>% 
+  filter(counts != 0) %>% 
+  group_by(CellType, ENTREZ)
 ```
 
 ---
-## Linking functions with pipes - (pt1)
+## dplyr::group_by
+
+Now that they are grouped by CellType and ENTREZ, we can filter for all genes that have counts greater than 0, in both replicates.
 ```{r}
-# (1) Group by common_name
-# (2) Filter to all those that have length bigger then 200
-# (3) Summarise is used to calculate mean IGF1_ng_ml over the grouped 
-# common_names for these larger fish
-
-df1 %>%
-  group_by(common_name) %>% 
-  filter(length_mm > 200) %>% 
-  summarise(IGF1_ng_ml_ave = mean(IGF1_ng_ml, na.rm = T))
+tidy_counts_meta %>% 
+  filter(counts != 0) %>% 
+  group_by(CellType, ENTREZ) %>%  
+  filter(n()>1)
 ```
+
 ---
-## Linking functions with pipes - (pt2)
+## Piping and plots
+
+By now it is clear how useful pipes can be, to stitch together the different operations. These pipes can go straight into plots. Here we make a simple X-Y plot to compare counts in our cell types. 
+
 ```{r}
-# (1) Create new variable that is discrete label depending on size of the fish
-# (2) Group by common_name and size
-# (3) Summarise is used to calculate mean IGF1_ng_ml over the grouped 
-# common_names and sizes
+p <- tidy_counts_meta %>%
+  group_by(ENTREZ, CellType) %>%
+  summarise(counts_mean = mean(counts)) %>% 
+  pivot_wider(names_from=CellType, values_from=counts_mean) %>%
+  ggplot(aes(x=CD34, y=ORTHO)) + geom_point()
 
-df1 %>%
-  mutate(size = if_else(length_mm > 200, 'big_fish', 'small_fish')) %>% 
-  group_by(common_name, size) %>% 
-  summarise(IGF1_ng_ml_ave = mean(IGF1_ng_ml, na.rm = T))
 ```
+
 ---
-## Linking functions with pipes - (pt3)
+## Piping and plots
+
+By now it is clear how useful pipes can be, to stitch together the different operations. These pipes can go straight into plots. Here we make a simple X-Y plot to compare counts in our cell types. 
+
 ```{r}
-# (1) Create new variable that is discrete label depending on size of the fish
-# (2) Group by common_name and size
-# (3) Summarise is used to calculate mean IGF1_ng_ml over the grouped 
-# common_names and sizes
-# (4) Filter out Coho and Sockeye salmon
-
-df1 %>%
-  mutate(size = if_else(length_mm > 200, 'big_fish', 'small_fish')) %>% 
-  group_by(common_name, size) %>% 
-  summarise(IGF1_ng_ml_ave = mean(IGF1_ng_ml, na.rm = T)) %>%
-  filter(common_name != 'Coho salmon')  %>%
-  filter(common_name !='Sockeye salmon')
-```
-
----
-## You can pipe straight to plots - (pt1)
-```{r, warning=F, message=F}
-
-p <- df1 %>% mutate(size=if_else(length_mm>200, 'big_fish', 'small_fish')) %>% 
-  group_by(common_name, size) %>% 
-  summarize(IGF1_ng_ml_ave=mean(IGF1_ng_ml, na.rm=T)) %>% 
-  filter(common_name != 'Coho salmon')  %>% 
-  filter(common_name != 'Sockeye salmon') %>% 
-  ggplot(aes(x = common_name, y = IGF1_ng_ml_ave, group = size, fill = size)) +
-  geom_bar(stat = "identity", position = "dodge") + 
-  theme(axis.text.x = element_text(angle = 90)) +
-  scale_fill_brewer(palette = "Paired")
+p 
 
 ```
+
 ---
-## You can pipe straight to plots - (pt2)
-```{r, warning=F, message=F}
-p
+```{r, results='asis',include=TRUE,echo=FALSE}
+if(params$isSlides == "yes"){
+  cat("class: inverse, center, middle
+
+# Outputting your tidy data
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=720px></html> 
+
+---
+"    
+  )
+}else{
+  cat("# Outputting your tidy data
+---
+"    
+  )
+  
+}
+
 ```
-
-
-
----
-## CHALLENGE: Time for an exercise!
-
-Exercise on piping can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/exercises/EX4_RU_tidyverse_pipes.html)
-
----
-### Answers to exercise.
-
-Answers can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX4_ANSWERS_RU_tidyverse_pipes.html)
-
-R code for solutions can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX4_ANSWERS_RU_tidyverse_pipes.R)
-
-
-
----
-## CHALLENGE: Time for an exercise!
-
-Exercise on readr can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/exercises/EX5_RU_tidyverse_readr.html)
-
-
-
-
 
 
 ---
 # Readr again: Writing out 
-You've made a lovely new tibble file. Now you need to save it somewhere. 
+You've made a lovely new tibble file. Now you need to save it somewhere. Theres a wide range of writing  options. Can specify the delmiter directly or use a specific function
 ```{r}
-#Theres a wide range of writing  options. Can specify the delmiter directly or use a specific function
-write_delim(tidy_counts_expressed_norm, '../expressed_genes_output.csv', delim =',')
 
-write_csv(tidy_counts_expressed_norm, '../expressed_genes_output.csv')
+write_delim(tidy_counts_meta, '../counts_with_metadata.csv', delim =',')
+
+write_csv(tidy_counts_meta, '../counts_with_metadata.csv')
 ```
 
 A key difference compared to base is that it does not write out row names. Tibbles generally don't have rownames.
 
+
 ---
-## tidyverse so far
-__At this point we have covered or touched on the most essential facets of tidy__  
-* ~~ggplot2 – making pretty graphs~~ 
-* ~~readr – reading data into R~~  
-* ~~dplyr – manipulating data~~  
-* ~~tibble - working with tibbles~~  
-* ~~tidyr – miscellaneous tools for tidying data~~
-* purrr - iterating over data  
-* stringr – working with strings  
-* forcats - working with factors  
+```{r, results='asis',include=TRUE,echo=FALSE}
+if(params$isSlides == "yes"){
+  cat("class: inverse, center, middle
+
+# Pattern matching with strings
+
+<html><div style='float:left'></div><hr color='#EB811B' size=1px width=720px></html> 
+
 ---
-# stringr - working with strings
+"    
+  )
+}else{
+  cat("# Pattern matching with strings
+---
+"    
+  )
+  
+}
+
+```
+
+---
+## stringr
 
 If the data you are working with involves characters from data entry often there will be errors i.e. clinical study metadata or a hand-typed list of genes of interest. Tidying data also means fixing these problems. stringr helps make this easy. 
 
@@ -982,170 +919,147 @@ If the data you are working with involves characters from data entry often there
 Though stringr is pretty comprehensive and covers most of what you will need, there is a sister package called stringi with even more functionality. 
 
 ---
-## stringr::strsub - string basics
-Many overlapping functions with base for combining, subsetting, converting and finding strings
+## stringr::strsub
+Many overlapping functions with base for combining, subsetting, converting and finding strings.
 
+Extract substrings from a range. Here the 1st to 3rd character.
 ```{r}
 
-brc <- c("Tom", "Ji-Dung", "Matt")
+brc <- c("Tom", "Ji-Dung", "Matthew", "Wei", "Doug")
 
-# Extract substrings from a range. Here the 1st to 3rd character
+
 brc %>% str_sub(1, 3)
+```
 
-# Extract substrings from a range. Here the 2nd to 2nd to last character
+Extract substrings from a range. Here the 2nd to 2nd to last character
+```{r}
 brc %>% str_sub(2, -2)
+```
 
+Assign values back to substrings. Here the 2nd to 2nd to last character is replaced with X.
+```{r}
 
-# Assign values back to substrings. Here the 2nd to 2nd to last character is replaced with X.
 str_sub(brc, 2, -2) <- 'X'
 brc
 ```
 
+
+## Replacing Strings
+It is easy to replace specific strings with *str_replace_all*.
+```{r}
+str_replace_all(brc, 'Matthew', 'Matt')
+str_replace_all(brc, 'u', 'z' )
+```
+
+
 ---
-## stringr::str_trim - stripping whitespace
+## Stripping whitespace
+
+Whitespace is often an issue for conssitent metadata. WE can use the *str_replace_all* function to remove whitespace. 
+```{r}
+brc2 <- c("Tom  ", "  Ji  -Dung", "Matt   ", "Wei", "D o u g")
+
+str_replace_all(brc2, ' ','' )
+```
+
+Rather then replacing all whitespace, you can trim trailing and leading whitespace from strings. 
 
 ```{r}
-brc2 <- c("Tom  ", "  Ji  -Dung", "Matt   ")
+str_trim(brc2)
 
-# Trim whitespace from strings
-brc2 <- str_trim(brc2)
-brc2 
+```
 
-# Can add whitespace to strings to get consistent length. Here all are 10 characters
+
+Can add whitespace to strings to get consistent length. Here all are 10 characters
+```{r}
+
 str_pad(brc2, width=10, side='left')
 ```
 
 ---
-## stringr::str\_to\_* - Capitalization - (pt1)
+## stringr::str\_to\_* - Capitalization
+Often when manipulating strings we will also need to alter the capitalization. A common case is if we want to do a quick and easy conversion between gene symbol nomenclature. 
 ```{r}
-# Lets reuse our counts tibble. pull from dplyr can be used to grab a tibble 
-# column and make it into a vector
-tidy_counts_expressed_norm %>% 
+
+tidy_counts_meta %>% 
   pull(SYMBOL) %>%
   head()
 
-# Here we pull our gene symbols from our tibble into a vector, and then convert 
-# them into title style capitalization
-tidy_counts_expressed_norm %>% 
+
+tidy_counts_meta %>% 
   pull(SYMBOL) %>% 
   str_to_title() %>% 
   head()
 ```
----
-## stringr::str\_to\_* - Capitalization - (pt2)
-```{r}
-# String manipulation functions can be used on tibbles using mutate. Here we convert
-# gene symbols to title style capitalization
-tidy_counts_expressed_norm %>% 
-  mutate(SYMBOL = str_to_title(SYMBOL))
-```
----
-## stringr::str\_to\_* - Capitalization - (pt3)
-```{r}
-# Here we convert chromosome annotation to capitals
-tidy_counts_expressed_norm %>% 
-  mutate(CHR = str_to_upper(CHR))
-```
 
 ---
-## stringr::detect - which have pattern?
-```{r}
-# Find patterns in different ways
-# Detect gives a T/F whether the pattern 'salmon' is present in vector
-df1 %>% 
-  pull(common_name) %>% 
-  str_detect('salmon')
-```
----
-## stringr::subset - give me only patterns
-```{r}
-# Subset returns the match if the pattern 'salmon' is present in vector
-df1 %>% 
-  dplyr::pull(common_name) %>% 
-  str_subset('salmon') 
-```
----
-## stringr::str_ends - ends with pattern?
-```{r}
-# Ends is similar to detect as it gives gives a T/F whether the pattern 'salmon' 
-# is present in vector, but the pattern has to be at the end. 
-df1 %>% 
-  dplyr::pull(common_name) %>% 
-  str_ends('salmon') 
+## stringr::str\_to\_* - Capitalization 
+String manipulation can be used with tibbles and mutate.
 
-df1 %>% 
-  filter(str_ends(common_name,'salmon'))
+```{r}
+tidy_counts_meta %>% 
+  mutate(SYMBOL2 = str_to_title(SYMBOL))
 ```
 ---
-## stringr::str_count - how many patterns?
+## stringr::str\_to\_* - Capitalization
+We can convert back to capitals, just as easy.
 ```{r}
-#Count gives you the total number of times your pattern appears in each chracter in the vector
-df1 %>% 
-  dplyr::pull(common_name) %>% 
-  str_count('salmon')
 
-df1 %>% 
-  dplyr::pull(common_name) %>% 
-  str_count('o')
-```
----
-## stringr::str_replace_all - replace a string
-```{r}
-#Replace
-df1 %>% 
-  dplyr::pull(common_name) %>%
-  str_replace_all('Steelhead','Steelhead trout' )
-```
----
-## stringr::str_replace_all - replace a string
-```{r}
-df1 %>% 
-  mutate(common_name = str_replace_all(common_name,'Steelhead','Steelhead trout' ))
+tidy_counts_meta %>% 
+  mutate(SYMBOL2 = str_to_title(SYMBOL)) %>% 
+  mutate(SYMBOL3 = str_to_upper(SYMBOL2))
 ```
 
 ---
-## CHALLENGE: Time for an exercise!
+## Finding patterns with stringr
+ 
+Find patterns in different ways. *str_detect* gives a T/F whether the pattern 'GAP' is present in vector.
+```{r}
 
-Exercise reviewing purrr can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/exercises/EX9_RU_tidyverse_stringr.html)
+tidy_counts_meta %>% 
+  pull(SYMBOL) %>% 
+  str_detect('GAP') %>% head()
 
----
-### Answers to exercise.
-
-Answers can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX9_ANSWERS_RU_tidyverse_stringr.html)
-
-R code for solutions can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX9_ANSWERS_RU_tidyverse_stringr.R)
-
-
-
----
-## CHALLENGE: Time for an exercise!
-
-Exercise reviewing purrr can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/exercises/EX10_RU_tidyverse_forcats.html)
+tidy_counts_meta %>% 
+  pull(SYMBOL) %>% 
+  str_detect('GAP') %>%
+  filter(tidy_counts_meta, .)
+```
 
 ---
-### Answers to exercise.
+## Finding patterns with stringr
 
-Answers can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX10_ANSWERS_RU_tidyverse_forcats.html)
+*str_subset* is similar to detect, but it returns the match itself.
 
-R code for solutions can be found [here](http://rockefelleruniversity.github.io/RU_tidyverse/tidyR/answers/EX10_ANSWERS_RU_tidyverse_forcats.R)
+```{r}
 
----
-# Summary 
-We have covered the core packages in the tidyverse  
+tidy_counts_meta %>% 
+  pull(SYMBOL) %>% 
+  str_subset('GAP')
 
-* ~~ggplot2 – making pretty graphs~~ 
-* ~~readr – reading data into R~~  
-* ~~dplyr – manipulating data~~  
-* ~~tibble - working with tibbles~~  
-* ~~tidyr – miscellaneous tools for tidying data~~
-* ~~purrr - iterating over data~~
-* ~~stringr – working with strings~~  
-* ~~forcats - working with factors~~  
+```
 
 ---
-## Tidy beyond this workshop
+## Finding patterns with stringr
 
-Hadley Wickham (Chief Scientist at RStudio) is the driving force behind the tidyverse.  
+Count gives you the total number of times your pattern appears in each character in the vector.
+
+```{r}
+
+tidy_counts_meta %>% 
+  pull(SYMBOL) %>% 
+  str_count('GAP')
+
+tidy_counts_meta %>% 
+  pull(SYMBOL) %>% 
+  str_count('A')
+```
+
+
+---
+## Tidy beyond this
+
+Hadley Wickham (Chief Scientist at RStudio) is the driving force behind the tidyverse. HE is a good place to start at to get an idea of the future of tidy.   
 
 Hadley wrote a paper about why he thinks tidy data is best: www.jstatsoft.org/v59/i10/paper.  
 
