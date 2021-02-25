@@ -4,7 +4,7 @@ Title: Tidyverse core components training
 Version: 0.1.1
 Author: Matt Paul and Thomas Carroll.
 Maintainer: Thomas Carroll <tc.infomatics@gmail>
-Description: This pacakge shows an example framework to build a teaching course. 
+Description: An introduction to the Tidy workflow for analysis. 
 License: What license is it under?
 LazyData: TRUE
 biocViews: Training
