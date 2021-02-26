@@ -1,7 +1,7 @@
 ---
-title: "EX5_ANSWERS_RU_tidyverse_readr"
+title: "RU_tidyverse_readr"
 author: "Rockefeller University, Bioinformatics Resource Centre"
-date: "https://rockefelleruniversity.github.io/RU_tidyverse/"
+date: "https://rockefelleruniversity.github.io/RU_tidyverse_core/"
 output: 
   html_document:
     toc: true # table of contents true
@@ -12,34 +12,130 @@ output:
     highlight: tango  # specifies the syntax highlighting style
 ---
 <p>&nbsp;</p>
-These exercises cover the sections of [Data wrangling with tidy](https://rockefelleruniversity.github.io/RU_tidyverse/). 
+These exercises cover the sections of [tidyverse session](https://rockefelleruniversity.github.io/RU_tidyverse/). 
 
-All files can be found in the "dataset" directory.
-<p>&nbsp;</p>
-**Exercise 5**  
-<p>&nbsp;</p>
-* Read in count data as different data types. What happens when we extract the vector of these counts?
+```{r, setup,include=FALSE}
+toMessage <- ifelse(!is.null(params$toMessage),params$toMessage,FALSE)
+message(toMessage)
+```
 
-# ANSWERS
+1. Load in the tidyverse. Read in the fish ecology data in the csv file *exercises_fish.csv*, within the **data** directory. Read the file in again a second time but update the data types to reflect what they are i.e. 2 factors, an integer and a double. Save it as a variable called *fish_df*.
+
+```{r,echo=toMessage}
+library(tidyverse)
+
+read_csv("data/exercises_fish.csv")
+
+fish_df <- read_csv("data/exercises_fish.csv", col_types = cols(
+  salmon_id = col_integer(),
+  `common_name-size` = col_factor(),
+  variable = col_factor(),
+  value = col_double()))
+
+fish_df
+```
+
+2. Tidy fish_df using pipes to link everything together. Update fish_df with this tidied dataframe. 
+
+```{r,echo=toMessage}
+#save("data/exercise_dfs.Rdata")
+
+load(file='data/exercise_dfs.Rdata')
+
+fish_df %<>% 
+  separate(`common_name-size`, sep = " - ", into=c("common_name", "age"), remove=TRUE) %>%
+  pivot_wider(names_from = variable, values_from = value)
+
+```
+
+3. From your tidied fish_df create a dataframe with the variables _age_ and _IGF_ for only the _Steelhead_ fish
+
+```{r,echo=toMessage}
+
+fish_df %>% filter(common_name == 'Steelhead') %>%
+  select( age, IGF1_ng_ml)
+```
+
+4. From your tidied fish_df create a dataframe with all the variables except the _IGF_ values, for all fish that begin with _S_. Arrange the dataframe based on common_name and length (largest first).
+
+```{r,echo=toMessage}
+
+fish_df %>% filter(str_starts(common_name,'S')) %>% 
+  select( -IGF1_ng_ml) %>% arrange(common_name, desc(length_mm))
+```
+
+6. From your tidied fish_df perform these steps using a pipe:
+
+- Group by the variable _age_. 
+- Filter to get the biggest 5 by the variable _length_ in each group. 
+- Summarize this data frame over the variable _length_ by calculating the mean. 
+
+```{r}
+fish_df %>% 
+  group_by( age) %>%
+  filter(rank(-length_mm) <= 5) %>% 
+  summarise( mean_length_mm = mean(length_mm, na.rm = T))
+```
+
+7. From your tidied fish_df perform these steps using a pipe:
+  - Filter to only look at _yearling_ in variable age
+  - Group by common_name
+  - Create new variable that is z-score of _length_ across groups (HINT: The *scale()* function can be used to calculate z-scores)
+  - Create boxplot of grouped length z-scores
+  
+```{r,echo=toMessage}
+
+fish_df %>% 
+  filter(age == 'yearling') %>%
+  group_by(common_name) %>% 
+  mutate(length_zscore = scale(length_mm)) %>%
+  ggplot(aes(x = common_name, y = length_zscore)) +
+  geom_boxplot(fill=c('gold','darkorange'))
+```
+
+
+8. Read in the count data *tidy_counts.csv* from the **data** directory. Try setting different data types i.e. factors and logicals. What happens when we extract the vector of these counts? Data types are coerced if the wrong data types are specified.
+
+```{r,echo=toMessage}
+
+tidy_counts <- read_csv("data/tidy_counts.csv", col_types = cols(
+    ENTREZ = col_character(),
+    count_total = col_character(),
+    Rep = col_logical()))
+
+tidy_counts$ENTREZ %>% head(n=8)
+tidy_counts$count_total %>% head(n=8)
+tidy_counts$Rep %>% head(n=8)
+
+```
+
+
+9. Re-read the tidy counts CSV into R. How many ATPase genes (starting with ATP) are there and what are they? Subset dataframe to just these ATPase genes. Create a new lowercase variable that has 'ATP' removed from the symbol.
+
 
 ## Load in dataset and packages
-```{r}
-library(tidyverse)
+```{r,echo=toMessage}
+tidy_counts <- read_csv("data/tidy_counts.csv") 
+
+tidy_counts %>% 
+  pull(SYMBOL) %>%
+  unique() %>% 
+  str_starts('ATP') %>% 
+  length()
+
+tidy_counts %>% 
+  pull(SYMBOL) %>%  
+  str_starts('ATP') %>% 
+  tidy_counts[.,] %>% 
+  pull(SYMBOL) %>% 
+  unique() 
+
+tidy_counts %>%
+  pull(SYMBOL) %>%  
+  str_starts('ATP') %>% 
+  tidy_counts[.,] %>%
+  mutate(ATPtype = str_replace_all(SYMBOL,'ATP','' )) %>%
+  mutate(ATPtype = str_to_lower(ATPtype))
+
+
 ```
-
-## Answer
-```{r}
-untidy_counts_test <- read_csv("dataset/hemato_rnaseq_counts.csv", col_types = cols(
-    ENTREZ = col_character(),
-    CD34_1 = col_integer(),
-    ORTHO_1 = col_character(),
-    CD34_2 = col_factor(),
-    ORTHO_2 = col_logical()
-  ))
-
-untidy_counts_test$CD34_1 %>% head(n=8)
-untidy_counts_test$ORTHO_1 %>% head(n=8)
-untidy_counts_test$CD34_2 %>% head(n=8)
-untidy_counts_test$ORTHO_2 %>% head(n=8)
-```
-
