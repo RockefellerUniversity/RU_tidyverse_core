@@ -1,9 +1,10 @@
 <br>
 
-#### **?? My course name?? , Session 1**
+#### **Tidyverse **
 
-??What am I focusing on in this section. Bullet point lists are good??
+In this session we will introduce the ethos of the Tidyverse and the most commonly used packages.
 
-* Course content
-* Building courses
-* Making it look nice
+* What does it mean to be Tidy?
+* Piping
+* Subsetting data with dplyr
+* String operations with stringr
