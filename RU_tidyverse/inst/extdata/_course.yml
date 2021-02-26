@@ -5,4 +5,4 @@ Presentations:
     titles: Session1
     PresRmd: Session1.Rmd
     PresOverviewRmd: Session1Overview.Rmd
-    Exercises: MyExercise1.Rmd
+    Exercises: RU_tidyverse.Rmd
