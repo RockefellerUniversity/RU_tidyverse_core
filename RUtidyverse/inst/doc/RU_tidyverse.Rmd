@@ -39,9 +39,6 @@ fish_df
 2. Tidy fish_df using pipes to link everything together. Update fish_df with this tidied dataframe. 
 
 ```{r,echo=toMessage}
-#save("data/exercise_dfs.Rdata")
-
-load(file='data/exercise_dfs.Rdata')
 
 fish_df %<>% 
   separate(`common_name-size`, sep = " - ", into=c("common_name", "age"), remove=TRUE) %>%
