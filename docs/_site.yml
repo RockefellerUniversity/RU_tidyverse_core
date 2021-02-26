@@ -1,0 +1,36 @@
+output_dir: '.'
+navbar:
+  title: Tidyverse abridged
+  left:
+  - text: Home
+    href: index.html
+  - text: Slides
+    menu:
+    - text: Session1
+      menu:
+      - text: Slide
+        href: presentations/slides/Session1.html
+      - text: Single Page
+        href: presentations/singlepage/Session1.html
+      - text: Code
+        href: presentations/r_code/Session1.R
+  - text: Exercises
+    menu:
+    - text: RU_tidyverse
+      menu:
+      - text: Exercise
+        href: exercises/exercises/RU_tidyverse_exercise.html
+      - text: Solution
+        href: exercises/answers/RU_tidyverse_answers.html
+  right:
+  - text: Getting help!
+    href: https://github.com//RockefellerUniversity/RU_tidyverse_core/issues
+  - href: https://twitter.com/Rockefeller_BRC
+    icon: ion-social-twitter
+output:
+  html_document:
+    toc: yes
+    theme: cosmo
+    toc_float: yes
+    highlight: textmate
+
