@@ -27,7 +27,7 @@ library(TxDb.Hsapiens.UCSC.hg19.knownGene)
 
 knitr::opts_chunk$set(echo = TRUE)
 
-knitr::opts_knit$set(root.dir = "RU_tidyverse/inst/extdata/")
+#knitr::opts_knit$set(root.dir = "RU_tidyverse/inst/extdata/")
 ```
 
 ```{r, results='asis',include=TRUE,echo=FALSE}
@@ -102,7 +102,7 @@ We already have a course online for plotting, including ggplot.
 https://rockefelleruniversity.github.io/Plotting_In_R/
 
 ---
-# Lets get tidy!
+## Lets get tidy!
 First step lets load in the data we are using today
 ```{r}
 
@@ -506,6 +506,8 @@ magrittR package developed the %>% pipe which is integral to the tidy way of for
 The pattern is similar but now follows a specific logical flow:
 
 ![dplyr](./imgs/dplyr_pipe2.png)
+
+![dplyr](imgs/dplyr_pipe2.png)
 
 ## Piping to string functions together
 This way there are no intermediates and the steps in your data analysis are logical and clear unlike nested code. 
