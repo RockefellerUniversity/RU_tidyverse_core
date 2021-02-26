@@ -1,0 +1,195 @@
+salmon_id,common_name-size,variable,value
+35032,Chinook salmon - yearling,length_mm,147
+35032,Chinook salmon - yearling,IGF1_ng_ml,41.26006
+35033,Chinook salmon - mixed age juvenile,length_mm,444
+35033,Chinook salmon - mixed age juvenile,IGF1_ng_ml,62.11528
+35034,Sockeye salmon - juvenile,length_mm,139
+35034,Sockeye salmon - juvenile,IGF1_ng_ml,NA
+35035,Sockeye salmon - juvenile,length_mm,121
+35035,Sockeye salmon - juvenile,IGF1_ng_ml,NA
+35036,Sockeye salmon - juvenile,length_mm,112
+35036,Sockeye salmon - juvenile,IGF1_ng_ml,NA
+35037,Steelhead - juvenile,length_mm,220
+35037,Steelhead - juvenile,IGF1_ng_ml,42.70981
+35038,Steelhead - juvenile,length_mm,152
+35038,Steelhead - juvenile,IGF1_ng_ml,NA
+35039,Steelhead - juvenile,length_mm,201
+35039,Steelhead - juvenile,IGF1_ng_ml,9.923847
+35040,Steelhead - juvenile,length_mm,200
+35040,Steelhead - juvenile,IGF1_ng_ml,38.11324
+35042,Steelhead - juvenile,length_mm,247
+35042,Steelhead - juvenile,IGF1_ng_ml,46.40051
+35043,Steelhead - juvenile,length_mm,272
+35043,Steelhead - juvenile,IGF1_ng_ml,42.59209
+35044,Steelhead - juvenile,length_mm,160
+35044,Steelhead - juvenile,IGF1_ng_ml,23.61155
+35045,Steelhead - juvenile,length_mm,177
+35045,Steelhead - juvenile,IGF1_ng_ml,4.4603
+35046,Steelhead - juvenile,length_mm,188
+35046,Steelhead - juvenile,IGF1_ng_ml,NA
+35048,Steelhead - juvenile,length_mm,288
+35048,Steelhead - juvenile,IGF1_ng_ml,24.24277
+35049,Steelhead - juvenile,length_mm,190
+35049,Steelhead - juvenile,IGF1_ng_ml,NA
+35050,Steelhead - juvenile,length_mm,283
+35050,Steelhead - juvenile,IGF1_ng_ml,63.46597
+35051,Steelhead - juvenile,length_mm,279
+35051,Steelhead - juvenile,IGF1_ng_ml,61.1822
+35052,Steelhead - juvenile,length_mm,235
+35052,Steelhead - juvenile,IGF1_ng_ml,30.62597
+35053,Steelhead - juvenile,length_mm,230
+35053,Steelhead - juvenile,IGF1_ng_ml,49.42205
+35054,Steelhead - juvenile,length_mm,176
+35054,Steelhead - juvenile,IGF1_ng_ml,56.29818
+35055,Steelhead - juvenile,length_mm,123
+35055,Steelhead - juvenile,IGF1_ng_ml,55.7222
+35056,Steelhead - juvenile,length_mm,208
+35056,Steelhead - juvenile,IGF1_ng_ml,57.36612
+35057,Steelhead - juvenile,length_mm,240
+35057,Steelhead - juvenile,IGF1_ng_ml,20.20055
+35058,Steelhead - juvenile,length_mm,243
+35058,Steelhead - juvenile,IGF1_ng_ml,79.64469
+35059,Steelhead - juvenile,length_mm,185
+35059,Steelhead - juvenile,IGF1_ng_ml,73.085
+35060,Steelhead - juvenile,length_mm,248
+35060,Steelhead - juvenile,IGF1_ng_ml,40.21412
+35061,Steelhead - juvenile,length_mm,221
+35061,Steelhead - juvenile,IGF1_ng_ml,47.92181
+35062,Steelhead - juvenile,length_mm,198
+35062,Steelhead - juvenile,IGF1_ng_ml,5.904613
+35063,Steelhead - juvenile,length_mm,228
+35063,Steelhead - juvenile,IGF1_ng_ml,53.7384
+35064,Steelhead - juvenile,length_mm,225
+35064,Steelhead - juvenile,IGF1_ng_ml,15.9704
+35065,Steelhead - juvenile,length_mm,222
+35065,Steelhead - juvenile,IGF1_ng_ml,40.21045
+35066,Steelhead - juvenile,length_mm,217
+35066,Steelhead - juvenile,IGF1_ng_ml,51.62066
+35067,Steelhead - juvenile,length_mm,235
+35067,Steelhead - juvenile,IGF1_ng_ml,65.6958
+35068,Steelhead - juvenile,length_mm,193
+35068,Steelhead - juvenile,IGF1_ng_ml,46.88596
+35069,Steelhead - juvenile,length_mm,245
+35069,Steelhead - juvenile,IGF1_ng_ml,61.9284
+35070,Steelhead - juvenile,length_mm,196
+35070,Steelhead - juvenile,IGF1_ng_ml,53.19057
+35071,Steelhead - juvenile,length_mm,199
+35071,Steelhead - juvenile,IGF1_ng_ml,58.4886
+35076,Chinook salmon - yearling,length_mm,173
+35076,Chinook salmon - yearling,IGF1_ng_ml,52.94368
+35077,Chinook salmon - yearling,length_mm,145
+35077,Chinook salmon - yearling,IGF1_ng_ml,39.38496
+35078,Chinook salmon - yearling,length_mm,152
+35078,Chinook salmon - yearling,IGF1_ng_ml,52.80831
+35079,Chinook salmon - yearling,length_mm,199
+35079,Chinook salmon - yearling,IGF1_ng_ml,53.19185
+35080,Chinook salmon - yearling,length_mm,145
+35080,Chinook salmon - yearling,IGF1_ng_ml,46.24463
+35081,Chinook salmon - yearling,length_mm,196
+35081,Chinook salmon - yearling,IGF1_ng_ml,5.557445
+35082,Chinook salmon - yearling,length_mm,150
+35082,Chinook salmon - yearling,IGF1_ng_ml,17.12608
+35083,Chinook salmon - yearling,length_mm,165
+35083,Chinook salmon - yearling,IGF1_ng_ml,22.5533
+35085,Coho salmon - yearling,length_mm,140
+35085,Coho salmon - yearling,IGF1_ng_ml,NA
+35087,Coho salmon - yearling,length_mm,164
+35087,Coho salmon - yearling,IGF1_ng_ml,73.5579
+35088,Chinook salmon - yearling,length_mm,165
+35088,Chinook salmon - yearling,IGF1_ng_ml,62.8559
+35089,Chinook salmon - yearling,length_mm,155
+35089,Chinook salmon - yearling,IGF1_ng_ml,44.01969
+35090,Chinook salmon - yearling,length_mm,167
+35090,Chinook salmon - yearling,IGF1_ng_ml,67.26108
+35092,Chinook salmon - yearling,length_mm,192
+35092,Chinook salmon - yearling,IGF1_ng_ml,81.841309999999993
+35093,Chinook salmon - yearling,length_mm,147
+35093,Chinook salmon - yearling,IGF1_ng_ml,21.98037
+35094,Chinook salmon - yearling,length_mm,184
+35094,Chinook salmon - yearling,IGF1_ng_ml,42.84343
+35095,Chinook salmon - subyearling,length_mm,90
+35095,Chinook salmon - subyearling,IGF1_ng_ml,NA
+35096,Sockeye salmon - juvenile,length_mm,115
+35096,Sockeye salmon - juvenile,IGF1_ng_ml,NA
+35097,Sockeye salmon - juvenile,length_mm,110
+35097,Sockeye salmon - juvenile,IGF1_ng_ml,NA
+35098,Sockeye salmon - juvenile,length_mm,112
+35098,Sockeye salmon - juvenile,IGF1_ng_ml,NA
+35099,Sockeye salmon - juvenile,length_mm,111
+35099,Sockeye salmon - juvenile,IGF1_ng_ml,NA
+35100,Sockeye salmon - juvenile,length_mm,118
+35100,Sockeye salmon - juvenile,IGF1_ng_ml,NA
+35101,Steelhead - juvenile,length_mm,167
+35101,Steelhead - juvenile,IGF1_ng_ml,65.4228
+35103,Chinook salmon - yearling,length_mm,216
+35103,Chinook salmon - yearling,IGF1_ng_ml,81.15276
+35110,Chinook salmon - mixed age juvenile,length_mm,275
+35110,Chinook salmon - mixed age juvenile,IGF1_ng_ml,81.51395
+35111,Chinook salmon - yearling,length_mm,137
+35111,Chinook salmon - yearling,IGF1_ng_ml,27.08215
+35112,Chinook salmon - yearling,length_mm,205
+35112,Chinook salmon - yearling,IGF1_ng_ml,90.53616
+35113,Chinook salmon - yearling,length_mm,162
+35113,Chinook salmon - yearling,IGF1_ng_ml,14.19707
+35114,Chinook salmon - yearling,length_mm,192
+35114,Chinook salmon - yearling,IGF1_ng_ml,46.51043
+35115,Chinook salmon - yearling,length_mm,215
+35115,Chinook salmon - yearling,IGF1_ng_ml,53.506
+35116,Chinook salmon - yearling,length_mm,165
+35116,Chinook salmon - yearling,IGF1_ng_ml,NA
+35117,Chinook salmon - yearling,length_mm,147
+35117,Chinook salmon - yearling,IGF1_ng_ml,61.22256
+35118,Chinook salmon - yearling,length_mm,181
+35118,Chinook salmon - yearling,IGF1_ng_ml,52.07231
+35119,Sockeye salmon - juvenile,length_mm,122
+35119,Sockeye salmon - juvenile,IGF1_ng_ml,NA
+35120,Steelhead - juvenile,length_mm,179
+35120,Steelhead - juvenile,IGF1_ng_ml,51.30049
+35121,Steelhead - juvenile,length_mm,198
+35121,Steelhead - juvenile,IGF1_ng_ml,76.27
+35123,Steelhead - juvenile,length_mm,193
+35123,Steelhead - juvenile,IGF1_ng_ml,62.2742
+35124,Steelhead - juvenile,length_mm,175
+35124,Steelhead - juvenile,IGF1_ng_ml,38.57209
+35126,Chinook salmon - yearling,length_mm,150
+35126,Chinook salmon - yearling,IGF1_ng_ml,NA
+35128,Chinook salmon - yearling,length_mm,190
+35128,Chinook salmon - yearling,IGF1_ng_ml,NA
+35129,Chinook salmon - yearling,length_mm,225
+35129,Chinook salmon - yearling,IGF1_ng_ml,72.65765
+35130,Chinook salmon - yearling,length_mm,151
+35130,Chinook salmon - yearling,IGF1_ng_ml,29.12988
+35131,Chinook salmon - yearling,length_mm,142
+35131,Chinook salmon - yearling,IGF1_ng_ml,45.98257
+35132,Chinook salmon - yearling,length_mm,148
+35132,Chinook salmon - yearling,IGF1_ng_ml,31.65
+35133,Chinook salmon - yearling,length_mm,170
+35133,Chinook salmon - yearling,IGF1_ng_ml,43.664
+35134,Chinook salmon - yearling,length_mm,146
+35134,Chinook salmon - yearling,IGF1_ng_ml,20.82805
+35135,Chinook salmon - yearling,length_mm,181
+35135,Chinook salmon - yearling,IGF1_ng_ml,11.49529
+35136,Chinook salmon - yearling,length_mm,145
+35136,Chinook salmon - yearling,IGF1_ng_ml,43.5044
+35137,Chinook salmon - yearling,length_mm,180
+35137,Chinook salmon - yearling,IGF1_ng_ml,43.27838
+35138,Chinook salmon - yearling,length_mm,142
+35138,Chinook salmon - yearling,IGF1_ng_ml,9.16889
+35139,Chinook salmon - yearling,length_mm,155
+35139,Chinook salmon - yearling,IGF1_ng_ml,56.6359
+35140,Chinook salmon - yearling,length_mm,142
+35140,Chinook salmon - yearling,IGF1_ng_ml,20.24624
+35141,Chinook salmon - yearling,length_mm,159
+35141,Chinook salmon - yearling,IGF1_ng_ml,44.38179
+35142,Chinook salmon - yearling,length_mm,149
+35142,Chinook salmon - yearling,IGF1_ng_ml,66.46594
+35143,Chinook salmon - yearling,length_mm,204
+35143,Chinook salmon - yearling,IGF1_ng_ml,80.94684
+35144,Sockeye salmon - juvenile,length_mm,140
+35144,Sockeye salmon - juvenile,IGF1_ng_ml,NA
+35145,Chinook salmon - yearling,length_mm,130
+35145,Chinook salmon - yearling,IGF1_ng_ml,23.37636
+35146,Chinook salmon - mixed age juvenile,length_mm,422
+35146,Chinook salmon - mixed age juvenile,IGF1_ng_ml,100.8254
+35147,Sockeye salmon - juvenile,length_mm,115
+35147,Sockeye salmon - juvenile,IGF1_ng_ml,NA
