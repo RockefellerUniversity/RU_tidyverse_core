@@ -1,0 +1,2284 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Session1.utf8</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Rockefeller University, Bioinformatics Resource Centre" />
+    <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
+    <link rel="stylesheet" href="metropolisCustom.css" type="text/css" />
+    <link rel="stylesheet" href="metropolis-fontsCustom.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Making R easier with Tidyverse
+<html>
+<div style="float:left">
+
+</div>
+<hr color='#EB811B' size=1px width=796px>
+</html>
+### Rockefeller University, Bioinformatics Resource Centre
+### <a href="https://rockefelleruniversity.github.io/RU_tidyverse/" class="uri">https://rockefelleruniversity.github.io/RU_tidyverse/</a>
+
+---
+
+
+
+
+
+
+## Data wrangling with the Tidyverse
+
+&lt;b&gt;There are some problems we face often when dealing with data.&lt;/b&gt;
+
+&lt;ul&gt;
+  &lt;li&gt;Every dataset is different. Sometimes very different.&lt;/li&gt;
+  &lt;li&gt;There are many ways to do things. Everyone has their favorite syntax.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;b&gt;The issue:&lt;/b&gt;
+Many fundamental data processing functions exist in &lt;i&gt;Base R&lt;/i&gt; and beyond. Sometimes they can be inconsistent or unnecessarily complex. Especially when dealing with non-standard dataframes. The result is code that is confusing and doesn't flow i.e. nested functions
+
+---
+## What does it mean to be tidy?
+
+Tidyverse is most importantly a philosophy for data analysis that more often then not makes wrangling data easier. The tidyverse community have built what they describe as an &lt;i&gt;opinionated&lt;/i&gt; group of packages. These packages readily talk to one another. 
+
+&lt;ul&gt;
+  &lt;li&gt;More efficient code&lt;/li&gt;
+  &lt;li&gt;Easier to remember syntax&lt;/li&gt;
+  &lt;li&gt;Easier to read syntax&lt;/li&gt;
+&lt;/ul&gt;
+
+You can read their &lt;a href="https://cran.r-project.org/web/packages/tidyverse/vignettes/manifesto.html"&gt;manifesto&lt;/a&gt; to get a better understanding of the tidy ethos. 
+  
+---
+## What does it &lt;i&gt;actually&lt;/i&gt; mean to be tidy?
+
+&lt;ul&gt;
+  &lt;li&gt;A defined vision for coding style in R  
+  &lt;li&gt;A defined vision for data formats in R
+  &lt;li&gt;A defined vision for package design in R
+  &lt;li&gt;Unified set of community pushing in a cohesive direction
+  &lt;li&gt;Critical mass of people to influence the way the whole R community evolves
+&lt;/ul&gt;
+
+---
+## What are the main tidy tools?
+
+&lt;ul&gt;
+  &lt;li&gt;ggplot2 – making pretty graphs 
+  &lt;li&gt;readr – reading data into R  
+  &lt;li&gt;dplyr – manipulating data  
+  &lt;li&gt;tibble - working with tibbles  
+  &lt;li&gt;tidyr – miscellaneous tools for tidying data
+  &lt;li&gt;purrr - iterating over data  
+  &lt;li&gt;stringr – working with strings  
+  &lt;li&gt;forcats - working with factors  
+&lt;/ul&gt;
+
+Other tools have now been made by the Tidy community. This community also overlaps with Bioconductor. But the packages above are the linchpins that hold it together. 
+
+---
+## What we won't be doing today
+
+We already have a course online for plotting, including ggplot.     
+
+https://rockefelleruniversity.github.io/Plotting_In_R/
+
+---
+## Lets get tidy!
+First step lets load in the data we are using today
+
+```r
+load(file='data/my_tidy.Rdata')
+```
+
+---
+## Are all data frames equal?
+
+```r
+head(df1)
+```
+
+```
+## # A tibble: 6 x 5
+##   salmon_id common_name    age_classbylength  length_mm IGF1_ng_ml
+##       &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;                  &lt;dbl&gt;      &lt;dbl&gt;
+## 1     35032 Chinook salmon yearling                 147       41.3
+## 2     35035 Sockeye salmon juvenile                 121       NA  
+## 3     35036 Sockeye salmon juvenile                 112       NA  
+## 4     35037 Steelhead      juvenile                 220       42.7
+## 5     35038 Steelhead      juvenile                 152       NA  
+## 6     35033 Chinook salmon mixed age juvenile       444       62.1
+```
+
+
+```r
+head(df2)
+```
+
+```
+## # A tibble: 6 x 5
+##   salmon_id common_name    age_classbylength  variable   value
+##       &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;              &lt;fct&gt;      &lt;dbl&gt;
+## 1     35032 Chinook salmon yearling           length_mm  147  
+## 2     35032 Chinook salmon yearling           IGF1_ng_ml  41.3
+## 3     35033 Chinook salmon mixed age juvenile length_mm  444  
+## 4     35033 Chinook salmon mixed age juvenile IGF1_ng_ml  62.1
+## 5     35034 Sockeye salmon juvenile           length_mm  139  
+## 6     35034 Sockeye salmon juvenile           IGF1_ng_ml  NA
+```
+
+---
+## Are all data frames equal?
+
+```r
+head(df3a)
+```
+
+```
+## # A tibble: 6 x 5
+##   salmon_id common_name    age_classbylength  variable  value
+##       &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;              &lt;fct&gt;     &lt;dbl&gt;
+## 1     35032 Chinook salmon yearling           length_mm   147
+## 2     35033 Chinook salmon mixed age juvenile length_mm   444
+## 3     35034 Sockeye salmon juvenile           length_mm   139
+## 4     35035 Sockeye salmon juvenile           length_mm   121
+## 5     35036 Sockeye salmon juvenile           length_mm   112
+## 6     35037 Steelhead      juvenile           length_mm   220
+```
+
+
+```r
+head(df3b)
+```
+
+```
+## # A tibble: 6 x 5
+##   salmon_id common_name    age_classbylength  variable   value
+##       &lt;dbl&gt; &lt;chr&gt;          &lt;chr&gt;              &lt;fct&gt;      &lt;dbl&gt;
+## 1     35032 Chinook salmon yearling           IGF1_ng_ml  41.3
+## 2     35033 Chinook salmon mixed age juvenile IGF1_ng_ml  62.1
+## 3     35034 Sockeye salmon juvenile           IGF1_ng_ml  NA  
+## 4     35035 Sockeye salmon juvenile           IGF1_ng_ml  NA  
+## 5     35036 Sockeye salmon juvenile           IGF1_ng_ml  NA  
+## 6     35037 Steelhead      juvenile           IGF1_ng_ml  42.7
+```
+
+---
+## What is a tidy dataset?
+
+A tidy dataset is a data frame (or table) for which the following are true:
+
+* Each variable has its own column
+* Each observation has its own row
+* Each value has its own cell
+
+***Which of our dataframes is tidy?***
+--
+&lt;p&gt;&amp;nbsp;&lt;/p&gt;
+Our first dataframe is tidy
+
+---
+## Why bother?
+
+Consistent dataframe layouts help to ensure that all values are present and that relationships between data points are clear.
+
+R is a vectorized programming language. R builds data frames from vectors, and R works best when its operation are vectorized.
+
+Tidy data utilizes both these aspects of R.  
+=&gt; Precise and Fast
+
+
+---
+class: inverse, center, middle
+
+# Reading and Tibbles
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=720px&gt;&lt;/html&gt; 
+
+---
+
+
+## Lets load in the tidyverse
+
+```r
+library(tidyverse)
+```
+
+```
+## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──
+```
+
+```
+## ✔ ggplot2 3.3.3     ✔ purrr   0.3.4
+## ✔ tibble  3.1.0     ✔ dplyr   1.0.4
+## ✔ tidyr   1.1.2     ✔ forcats 0.5.1
+## ✔ readr   1.4.0
+```
+
+```
+## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## ✖ dplyr::collapse()   masks IRanges::collapse()
+## ✖ dplyr::combine()    masks Biobase::combine(), BiocGenerics::combine()
+## ✖ dplyr::desc()       masks IRanges::desc()
+## ✖ tidyr::expand()     masks S4Vectors::expand()
+## ✖ tidyr::extract()    masks magrittr::extract()
+## ✖ dplyr::filter()     masks stats::filter()
+## ✖ dplyr::first()      masks S4Vectors::first()
+## ✖ dplyr::lag()        masks stats::lag()
+## ✖ ggplot2::Position() masks BiocGenerics::Position(), base::Position()
+## ✖ purrr::reduce()     masks GenomicRanges::reduce(), IRanges::reduce()
+## ✖ dplyr::rename()     masks S4Vectors::rename()
+## ✖ dplyr::select()     masks AnnotationDbi::select()
+## ✖ purrr::set_names()  masks magrittr::set_names()
+## ✖ dplyr::slice()      masks IRanges::slice()
+```
+
+
+
+---
+## readr: Reading data into R
+
+Lets start from the beginning and tidy some data. First step is to read in data. 
+
+readr:
+
+* read_csv(): comma separated (CSV) files  
+* read_tsv(): tab separated files  
+* read_delim(): general delimited files  
+* read_fwf(): fixed width files  
+* read_table(): tabular files where columns are separated by white-space  
+* read_log(): web log files   
+
+---
+## Reading in with base
+
+When you read data in with base, it goes into a regular dataframe. When you return the dataframe through typing it in the console it will just print the whole dataframe.
+
+
+```r
+untidy_counts_base &lt;- read.csv("data/hemato_rnaseq_counts.csv")
+
+untidy_counts_base
+```
+
+```
+##     ENTREZ CD34_1 ORTHO_1 CD34_2 ORTHO_2
+## 1      350    204       0    103       0
+## 2      351  15586     479  10476      39
+## 3      353    842     355   1188      86
+## 4      354      0       0      0       0
+## 5      355    123     291    139      16
+## 6      356      1       1      0       0
+## 7      357    380       3    177       0
+## 8      358    572    2225    597    4051
+## 9      359      0      12      1       0
+## 10     360    320     502     46    1114
+## 11     361      0       1      0       0
+## 12     362      3       1     15       0
+## 13     363     14       6      4       1
+## 14     364      7       0      1       0
+## 15     366      6       0      1       0
+## 16     367     42       0     51       1
+## 17     368     28       0     24       0
+## 18     369   1204    1034    833     478
+## 19     372   2829    1864   2741     771
+## 20     373    179     728    148     795
+## 21     374     76       5    138       2
+## 22     375   4428    6697   4970    4328
+## 23     377   3170     314   2576      11
+## 24     378   1839    4845   1767    2975
+## 25     379    178       1    181       0
+## 26     381   1617     574   1159     339
+## 27     382   2874    2265   1746    1668
+## 28     383     63    1632     40     721
+## 29     384    148   10977    118      94
+## 30     387   8899    2457   7405    1228
+## 31     388  12598     171   5090      70
+## 32     389   2709     193   2313       5
+## 33     390   1004       0    395       0
+## 34     391   1038     577   1176     164
+## 35     392   1527     304    786      71
+## 36     393   2949     138   1540       3
+## 37     394   1525     464   1062     134
+## 38     395    348      67    123       0
+## 39     396   6503     702   4723     169
+## 40     397  12997     410  11265      38
+## 41     398      0       0      0       0
+## 42     399    223      11    422       2
+## 43     400   1188     147    806      56
+## 44     401      0       0      0       0
+## 45     402    504     218    496      80
+## 46     403    289      25    166       4
+## 47     405   1481     824   1004     812
+## 48     406    295     175     87      35
+## 49     407      4       1      2       1
+## 50     408   2451     111   1523       6
+## 51     409   2480    1819   1356     226
+## 52     410    433     197    215      77
+## 53     411    829     217    441     131
+## 54     412    312      45    138      17
+## 55     414    516      15    396       9
+## 56     415     20       0     13       0
+## 57     416      2       1      4       0
+## 58     417      0       0      0       0
+## 59     419      6       5      2       7
+## 60     420    141    1136     94    1217
+## 61     421    213     255     93     208
+## 62     427   4699   11889   1729     926
+## 63     429      0       0      2       0
+## 64     430     34      13     22       0
+## 65     432     63       0     55       1
+## 66     433     38       0     26       0
+## 67     434      1       1      2       0
+## 68     435    408     151    284      34
+## 69     440    157    2520    111     535
+## 70     443      5       0      4       0
+## 71     444   1583     151    747      14
+## 72     445    116      15     90       1
+## 73     460     34       0     68       0
+## 74     462     70       0     31       1
+## 75     463   1244     118    492      71
+## 76     466    538     480    393     218
+## 77     467   2506     402   2130      18
+## 78     468   7991    6132   5307    1883
+## 79     471   1272     771   1392      53
+## 80     472   1389     628    739     138
+## 81     473   4173     783   1901     776
+## 82     474      0       0      0       0
+## 83     475    284      83    467      34
+## 84     476   4952    3453   4202    1416
+## 85     477     13       3     26       2
+## 86     478     78     121     67       0
+## 87     479     17       0      4       0
+## 88     480      9       5     11       1
+## 89     481   1937      18   1017      34
+## 90     482    157    1392     75    1660
+## 91     483   1075    1454   1789    1141
+## 92     486     47       0     18       0
+## 93     487     29      33     19       3
+## 94     488   4529    1118   2925     269
+## 95     489   3465     153   3188       8
+## 96     490   1610    1263    913     665
+## 97     491     12       1      4       0
+## 98     492      4       0      6       0
+## 99     493   5011    3585   3053     743
+## 100    495      0       0      0       0
+```
+
+---
+## Reading in with readr
+
+When you use readr to read in your data, you instead get a special dataframe called a tibble. Tibbles have several properties that make them more user friendly i.e. When you return the tibble through typing it in the console it will print a preview, with some information about dimensions and data types. 
+
+```r
+read_csv("data/hemato_rnaseq_counts.csv")
+```
+
+```
+## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   ENTREZ = col_double(),
+##   CD34_1 = col_double(),
+##   ORTHO_1 = col_double(),
+##   CD34_2 = col_double(),
+##   ORTHO_2 = col_double()
+## )
+```
+
+```
+## # A tibble: 100 x 5
+##    ENTREZ CD34_1 ORTHO_1 CD34_2 ORTHO_2
+##     &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;
+##  1    350    204       0    103       0
+##  2    351  15586     479  10476      39
+##  3    353    842     355   1188      86
+##  4    354      0       0      0       0
+##  5    355    123     291    139      16
+##  6    356      1       1      0       0
+##  7    357    380       3    177       0
+##  8    358    572    2225    597    4051
+##  9    359      0      12      1       0
+## 10    360    320     502     46    1114
+## # … with 90 more rows
+```
+
+---
+## Reading in with readr
+Tibbles carry and display extra information. While reading in it is easy to specify data type. 
+
+```r
+untidy_counts &lt;- read_csv("data/hemato_rnaseq_counts.csv", col_types = cols(
+    ENTREZ = col_character(),
+    CD34_1 = col_integer(),
+    ORTHO_1 = col_integer(),
+    CD34_2 = col_integer(),
+    ORTHO_2 = col_integer()
+  ))
+untidy_counts
+```
+
+```
+## # A tibble: 100 x 5
+##    ENTREZ CD34_1 ORTHO_1 CD34_2 ORTHO_2
+##    &lt;chr&gt;   &lt;int&gt;   &lt;int&gt;  &lt;int&gt;   &lt;int&gt;
+##  1 350       204       0    103       0
+##  2 351     15586     479  10476      39
+##  3 353       842     355   1188      86
+##  4 354         0       0      0       0
+##  5 355       123     291    139      16
+##  6 356         1       1      0       0
+##  7 357       380       3    177       0
+##  8 358       572    2225    597    4051
+##  9 359         0      12      1       0
+## 10 360       320     502     46    1114
+## # … with 90 more rows
+```
+
+## Subsetting to make tibbles
+You can use the same methods as base to interact with tibbles to subset them.
+
+
+```r
+untidy_counts[1,]
+```
+
+```
+## # A tibble: 1 x 5
+##   ENTREZ CD34_1 ORTHO_1 CD34_2 ORTHO_2
+##   &lt;chr&gt;   &lt;int&gt;   &lt;int&gt;  &lt;int&gt;   &lt;int&gt;
+## 1 350       204       0    103       0
+```
+
+```r
+untidy_counts[,1]
+```
+
+```
+## # A tibble: 100 x 1
+##    ENTREZ
+##    &lt;chr&gt; 
+##  1 350   
+##  2 351   
+##  3 353   
+##  4 354   
+##  5 355   
+##  6 356   
+##  7 357   
+##  8 358   
+##  9 359   
+## 10 360   
+## # … with 90 more rows
+```
+
+---
+## Subsetting to make tibbles
+Tibbles are column-oriented, so if you don't specify row/column with a comma, it will assume you want a column. 
+
+```r
+untidy_counts[1]
+```
+
+```
+## # A tibble: 100 x 1
+##    ENTREZ
+##    &lt;chr&gt; 
+##  1 350   
+##  2 351   
+##  3 353   
+##  4 354   
+##  5 355   
+##  6 356   
+##  7 357   
+##  8 358   
+##  9 359   
+## 10 360   
+## # … with 90 more rows
+```
+
+---
+## Subsetting to make vectors
+The outputs thus far have produced more tibbles. Sometimes we just want a vector. Like lists, we can use double brackets. 
+
+```r
+untidy_counts[[1]]
+```
+
+```
+##   [1] "350" "351" "353" "354" "355" "356" "357" "358" "359" "360" "361" "362"
+##  [13] "363" "364" "366" "367" "368" "369" "372" "373" "374" "375" "377" "378"
+##  [25] "379" "381" "382" "383" "384" "387" "388" "389" "390" "391" "392" "393"
+##  [37] "394" "395" "396" "397" "398" "399" "400" "401" "402" "403" "405" "406"
+##  [49] "407" "408" "409" "410" "411" "412" "414" "415" "416" "417" "419" "420"
+##  [61] "421" "427" "429" "430" "432" "433" "434" "435" "440" "443" "444" "445"
+##  [73] "460" "462" "463" "466" "467" "468" "471" "472" "473" "474" "475" "476"
+##  [85] "477" "478" "479" "480" "481" "482" "483" "486" "487" "488" "489" "490"
+##  [97] "491" "492" "493" "495"
+```
+
+---
+## Subsetting to make vectors
+Also, like lists we can use a dollar sign with the column name.
+
+```r
+untidy_counts$ENTREZ
+```
+
+```
+##   [1] "350" "351" "353" "354" "355" "356" "357" "358" "359" "360" "361" "362"
+##  [13] "363" "364" "366" "367" "368" "369" "372" "373" "374" "375" "377" "378"
+##  [25] "379" "381" "382" "383" "384" "387" "388" "389" "390" "391" "392" "393"
+##  [37] "394" "395" "396" "397" "398" "399" "400" "401" "402" "403" "405" "406"
+##  [49] "407" "408" "409" "410" "411" "412" "414" "415" "416" "417" "419" "420"
+##  [61] "421" "427" "429" "430" "432" "433" "434" "435" "440" "443" "444" "445"
+##  [73] "460" "462" "463" "466" "467" "468" "471" "472" "473" "474" "475" "476"
+##  [85] "477" "478" "479" "480" "481" "482" "483" "486" "487" "488" "489" "490"
+##  [97] "491" "492" "493" "495"
+```
+
+---
+## Tibbles: Converting to tibble
+There are coercion functions similar to base to convert a regular dataframe to a tibble. 
+
+```r
+as_tibble(untidy_counts_base)
+```
+
+```
+## # A tibble: 100 x 5
+##    ENTREZ CD34_1 ORTHO_1 CD34_2 ORTHO_2
+##     &lt;int&gt;  &lt;int&gt;   &lt;int&gt;  &lt;int&gt;   &lt;int&gt;
+##  1    350    204       0    103       0
+##  2    351  15586     479  10476      39
+##  3    353    842     355   1188      86
+##  4    354      0       0      0       0
+##  5    355    123     291    139      16
+##  6    356      1       1      0       0
+##  7    357    380       3    177       0
+##  8    358    572    2225    597    4051
+##  9    359      0      12      1       0
+## 10    360    320     502     46    1114
+## # … with 90 more rows
+```
+
+---
+## Tibbles: Converting to tibble
+Once it is a tibble it is straight forward to modify the datatype using the dplyr function mutate_at. 
+
+```r
+untidy_counts_base &lt;- as_tibble(untidy_counts_base)
+untidy_counts_base &lt;- mutate_at(untidy_counts_base, vars(ENTREZ), as.character)
+untidy_counts_base
+```
+
+```
+## # A tibble: 100 x 5
+##    ENTREZ CD34_1 ORTHO_1 CD34_2 ORTHO_2
+##    &lt;chr&gt;   &lt;int&gt;   &lt;int&gt;  &lt;int&gt;   &lt;int&gt;
+##  1 350       204       0    103       0
+##  2 351     15586     479  10476      39
+##  3 353       842     355   1188      86
+##  4 354         0       0      0       0
+##  5 355       123     291    139      16
+##  6 356         1       1      0       0
+##  7 357       380       3    177       0
+##  8 358       572    2225    597    4051
+##  9 359         0      12      1       0
+## 10 360       320     502     46    1114
+## # … with 90 more rows
+```
+
+---
+## Tibbles: Converting from tibble
+
+Some tools are not tibble friendly. Calling as.data.frame is sufficient to convert it back to a base data frame
+
+
+```r
+as.data.frame(untidy_counts_base) %&gt;% head(n=12)
+```
+
+```
+##    ENTREZ CD34_1 ORTHO_1 CD34_2 ORTHO_2
+## 1     350    204       0    103       0
+## 2     351  15586     479  10476      39
+## 3     353    842     355   1188      86
+## 4     354      0       0      0       0
+## 5     355    123     291    139      16
+## 6     356      1       1      0       0
+## 7     357    380       3    177       0
+## 8     358    572    2225    597    4051
+## 9     359      0      12      1       0
+## 10    360    320     502     46    1114
+## 11    361      0       1      0       0
+## 12    362      3       1     15       0
+```
+
+---
+## Tibbles: Make your own - (pt1)
+We will make our own tibble now from scratch, using some metadata. We are accessing some Bioconductor databases that contain annotation information for genes. 
+First we grab the position of genes. Then we use the IDs to get gene symbols. We will cover how to do this in more detail later on [here](https://rockefelleruniversity.github.io/Bioconductor_Introduction/presentations/singlepage/GenomicFeatures_In_Bioconductor.html#Extracting_Genomic_Locations)
+
+
+```r
+# Lets load in some packages
+library(org.Hs.eg.db)
+library(TxDb.Hsapiens.UCSC.hg19.knownGene)
+
+hg19_genes &lt;- genes(TxDb.Hsapiens.UCSC.hg19.knownGene)
+```
+
+```
+##   403 genes were dropped because they have exons located on both strands
+##   of the same reference sequence or on more than one reference sequence,
+##   so cannot be represented by a single genomic range.
+##   Use 'single.strand.genes.only=FALSE' to get all the genes in a
+##   GRangesList object, or use suppressMessages() to suppress this message.
+```
+
+```r
+keys &lt;- hg19_genes$gene_id
+
+symbols &lt;- AnnotationDbi::select(org.Hs.eg.db, keys = keys, columns = c("SYMBOL"), keytype = "ENTREZID")
+```
+
+```
+## 'select()' returned 1:1 mapping between keys and columns
+```
+
+
+---
+## Tibbles: Make your own
+Now we will put all the metadata together into a tibble
+
+```r
+counts_metadata &lt;- tibble(ID = symbols$ENTREZID, SYMBOL = symbols$SYMBOL, LENGTH = lengths(hg19_genes))
+
+counts_metadata
+```
+
+```
+## # A tibble: 23,056 x 3
+##    ID        SYMBOL     LENGTH
+##    &lt;chr&gt;     &lt;chr&gt;       &lt;int&gt;
+##  1 1         A1BG        16043
+##  2 10        NAT2         9969
+##  3 100       ADA         32214
+##  4 1000      CDH2       226516
+##  5 10000     AKT3       355352
+##  6 100008586 GAGE12F     15729
+##  7 100009676 ZBTB11-AS1   2784
+##  8 10001     MED6        16428
+##  9 10002     NR2E3        7704
+## 10 10003     NAALAD2     57962
+## # … with 23,046 more rows
+```
+
+
+---
+class: inverse, center, middle
+
+# Tidying up your data
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=720px&gt;&lt;/html&gt; 
+
+---
+
+
+## Tidying data up
+
+What is wrong with the count dataframe from a tidy viewpoint?  
+
+_Remember_. These are the rules:
+
+* Each variable has its own column
+* Each observation has its own row
+* Each value has its own cell
+
+
+```r
+untidy_counts
+```
+
+```
+## # A tibble: 100 x 5
+##    ENTREZ CD34_1 ORTHO_1 CD34_2 ORTHO_2
+##    &lt;chr&gt;   &lt;int&gt;   &lt;int&gt;  &lt;int&gt;   &lt;int&gt;
+##  1 350       204       0    103       0
+##  2 351     15586     479  10476      39
+##  3 353       842     355   1188      86
+##  4 354         0       0      0       0
+##  5 355       123     291    139      16
+##  6 356         1       1      0       0
+##  7 357       380       3    177       0
+##  8 358       572    2225    597    4051
+##  9 359         0      12      1       0
+## 10 360       320     502     46    1114
+## # … with 90 more rows
+```
+
+---
+## Tidying data up
+
+What is wrong with the count dataframe from a tidy viewpoint?  
+
+_Remember_, these are the rules:
+
+* Each variable has its own column
+* Each observation has its own row
+* Each value has its own cell
+
+__A single variable with multiple columns__
+
+
+```r
+untidy_counts
+```
+
+```
+## # A tibble: 100 x 5
+##    ENTREZ CD34_1 ORTHO_1 CD34_2 ORTHO_2
+##    &lt;chr&gt;   &lt;int&gt;   &lt;int&gt;  &lt;int&gt;   &lt;int&gt;
+##  1 350       204       0    103       0
+##  2 351     15586     479  10476      39
+##  3 353       842     355   1188      86
+##  4 354         0       0      0       0
+##  5 355       123     291    139      16
+##  6 356         1       1      0       0
+##  7 357       380       3    177       0
+##  8 358       572    2225    597    4051
+##  9 359         0      12      1       0
+## 10 360       320     502     46    1114
+## # … with 90 more rows
+```
+
+---
+## Reshape data with gather and spread
+
+When all the content is in the tibble, but it is in the wrong orientation, tidyr has some tools to move the data around quickly and easily:  
+
+__gather and spread__
+
+---
+## tidyr::pivot_longer
+pivot_longer allows you to collapse single variables that are spread over multiple columns. In this case new columns Sample and Counts are created. Sample is made from the column names hence *names_to*. While Counts is made from the values within the columns hence *values_to*. We are also specifying that we are tidying all columns apart from ENTREZ with the cols argument. 
+
+**This recently replaced a function called gather**
+
+```r
+tidier_counts &lt;- pivot_longer(untidy_counts, names_to = "Sample", values_to = "counts", cols = c(-ENTREZ))
+tidier_counts
+```
+
+```
+## # A tibble: 400 x 3
+##    ENTREZ Sample  counts
+##    &lt;chr&gt;  &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1     204
+##  2 350    ORTHO_1      0
+##  3 350    CD34_2     103
+##  4 350    ORTHO_2      0
+##  5 351    CD34_1   15586
+##  6 351    ORTHO_1    479
+##  7 351    CD34_2   10476
+##  8 351    ORTHO_2     39
+##  9 353    CD34_1     842
+## 10 353    ORTHO_1    355
+## # … with 390 more rows
+```
+
+---
+## tidyr::pivot_wider
+pivot_wider allows you to go in the oopsite direction to pivot_longer. We can spread single variables over multiple columns.
+
+```r
+pivot_wider(tidier_counts, names_from = c(Sample), values_from = counts)
+```
+
+```
+## # A tibble: 100 x 5
+##    ENTREZ CD34_1 ORTHO_1 CD34_2 ORTHO_2
+##    &lt;chr&gt;   &lt;int&gt;   &lt;int&gt;  &lt;int&gt;   &lt;int&gt;
+##  1 350       204       0    103       0
+##  2 351     15586     479  10476      39
+##  3 353       842     355   1188      86
+##  4 354         0       0      0       0
+##  5 355       123     291    139      16
+##  6 356         1       1      0       0
+##  7 357       380       3    177       0
+##  8 358       572    2225    597    4051
+##  9 359         0      12      1       0
+## 10 360       320     502     46    1114
+## # … with 90 more rows
+```
+
+---
+## What is next to tidy?
+
+_Remember_, these are the rules:
+
+* Each variable has its own column
+* Each observation has its own row
+* Each value has its own cell
+
+
+```r
+tidier_counts
+```
+
+```
+## # A tibble: 400 x 3
+##    ENTREZ Sample  counts
+##    &lt;chr&gt;  &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1     204
+##  2 350    ORTHO_1      0
+##  3 350    CD34_2     103
+##  4 350    ORTHO_2      0
+##  5 351    CD34_1   15586
+##  6 351    ORTHO_1    479
+##  7 351    CD34_2   10476
+##  8 351    ORTHO_2     39
+##  9 353    CD34_1     842
+## 10 353    ORTHO_1    355
+## # … with 390 more rows
+```
+
+---
+## What is next to tidy?
+
+_Remember_, these are the rules:
+
+* Each variable has its own column
+* Each observation has its own row
+* Each value has its own cell
+
+__Multiple variables in a single column__
+
+
+```r
+tidier_counts
+```
+
+```
+## # A tibble: 400 x 3
+##    ENTREZ Sample  counts
+##    &lt;chr&gt;  &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1     204
+##  2 350    ORTHO_1      0
+##  3 350    CD34_2     103
+##  4 350    ORTHO_2      0
+##  5 351    CD34_1   15586
+##  6 351    ORTHO_1    479
+##  7 351    CD34_2   10476
+##  8 351    ORTHO_2     39
+##  9 353    CD34_1     842
+## 10 353    ORTHO_1    355
+## # … with 390 more rows
+```
+
+---
+## Splitting and combining varaibles
+
+When there are several variables crammed into a single column, tidyr can be used to split single values into several:  
+
+__separate__
+
+---
+## tidyr::separate
+Separate allows you to break a strings in a variable by a separator. In this case the cell type and replicate number are broken by underscore.
+
+```r
+tidy_counts &lt;- separate(tidier_counts, Sample, sep = "_", into=c("CellType", "Rep"), remove=TRUE)
+tidy_counts
+```
+
+```
+## # A tibble: 400 x 4
+##    ENTREZ CellType Rep   counts
+##    &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt;
+##  1 350    CD34     1        204
+##  2 350    ORTHO    1          0
+##  3 350    CD34     2        103
+##  4 350    ORTHO    2          0
+##  5 351    CD34     1      15586
+##  6 351    ORTHO    1        479
+##  7 351    CD34     2      10476
+##  8 351    ORTHO    2         39
+##  9 353    CD34     1        842
+## 10 353    ORTHO    1        355
+## # … with 390 more rows
+```
+
+---
+## tidyr::unite
+Unite can go the other way. This can sometime be useful i.e. if you want a specific sample ID
+
+```r
+unite(tidy_counts, Sample, CellType, Rep, remove=FALSE)
+```
+
+```
+## # A tibble: 400 x 5
+##    ENTREZ Sample  CellType Rep   counts
+##    &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt;
+##  1 350    CD34_1  CD34     1        204
+##  2 350    ORTHO_1 ORTHO    1          0
+##  3 350    CD34_2  CD34     2        103
+##  4 350    ORTHO_2 ORTHO    2          0
+##  5 351    CD34_1  CD34     1      15586
+##  6 351    ORTHO_1 ORTHO    1        479
+##  7 351    CD34_2  CD34     2      10476
+##  8 351    ORTHO_2 ORTHO    2         39
+##  9 353    CD34_1  CD34     1        842
+## 10 353    ORTHO_1 ORTHO    1        355
+## # … with 390 more rows
+```
+
+
+---
+class: inverse, center, middle
+
+# Piping with Magrittr
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=720px&gt;&lt;/html&gt; 
+
+---
+
+
+## Simplifying code
+
+Often when getting started code can get a little out of control and confusing. As addiotnal steps are adeed code can become nested. For example here we tidy our data in a single complicated expression 
+
+
+```r
+tidy_counts &lt;- separate(pivot_longer(untidy_counts, names_to = "Sample", values_to = "counts", cols = c(-ENTREZ)), Sample, sep = "_", into = c("CellType","Rep"), remove=FALSE)
+```
+
+We simplified things by saving each step as an intermediate. This is not very efficient. 
+
+
+```r
+tidier_counts &lt;- pivot_longer(untidy_counts, names_to = "Sample", values_to = "counts", cols = c(-ENTREZ))
+tidy_counts &lt;- separate(tidier_counts, Sample, sep = "_", into = c("CellType","Rep"), remove=FALSE)
+```
+
+
+---
+## Piping to string functions together
+
+Piping allows you to pass the result from one expression directly into another.  
+magrittR package developed the %&gt;% pipe which is integral to the tidy way of formatting code
+
+The pattern is similar but now follows a specific logical flow:
+
+![dplyr](./imgs/dplyr_pipe2.png)
+
+![dplyr](imgs/dplyr_pipe2.png)
+
+## Piping to string functions together
+This way there are no intermediates and the steps in your data analysis are logical and clear unlike nested code. 
+
+```r
+tidy_counts &lt;- untidy_counts %&gt;% 
+  gather(key=Sample, value=counts, -ENTREZ) %&gt;% 
+  separate(Sample, sep = "_", into = c("CellType","Rep"), remove=FALSE)
+tidy_counts
+```
+
+```
+## # A tibble: 400 x 5
+##    ENTREZ Sample CellType Rep   counts
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt;
+##  1 350    CD34_1 CD34     1        204
+##  2 351    CD34_1 CD34     1      15586
+##  3 353    CD34_1 CD34     1        842
+##  4 354    CD34_1 CD34     1          0
+##  5 355    CD34_1 CD34     1        123
+##  6 356    CD34_1 CD34     1          1
+##  7 357    CD34_1 CD34     1        380
+##  8 358    CD34_1 CD34     1        572
+##  9 359    CD34_1 CD34     1          0
+## 10 360    CD34_1 CD34     1        320
+## # … with 390 more rows
+```
+
+
+## Advanced Piping
+
+A period ( . ) can be used as placeholders to represent the object being piped in. 
+In this case we use the period to in a logical expression, which we then use to subset itself. 
+
+```r
+tidier_counts %&gt;% .[.$counts &gt; 0,]
+```
+
+```
+## # A tibble: 330 x 3
+##    ENTREZ Sample  counts
+##    &lt;chr&gt;  &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1     204
+##  2 350    CD34_2     103
+##  3 351    CD34_1   15586
+##  4 351    ORTHO_1    479
+##  5 351    CD34_2   10476
+##  6 351    ORTHO_2     39
+##  7 353    CD34_1     842
+##  8 353    ORTHO_1    355
+##  9 353    CD34_2    1188
+## 10 353    ORTHO_2     86
+## # … with 320 more rows
+```
+
+%&lt;&gt;% is a modification of the pipe. This is a two way pipe that will carry the variable forward, and once expression is resolved, the result then gets assigned back to the original variable.
+
+
+```r
+library(magrittr)
+tidier_counts %&lt;&gt;% .[.$counts &gt; 0,]
+tidier_counts
+```
+
+```
+## # A tibble: 330 x 3
+##    ENTREZ Sample  counts
+##    &lt;chr&gt;  &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1     204
+##  2 350    CD34_2     103
+##  3 351    CD34_1   15586
+##  4 351    ORTHO_1    479
+##  5 351    CD34_2   10476
+##  6 351    ORTHO_2     39
+##  7 353    CD34_1     842
+##  8 353    ORTHO_1    355
+##  9 353    CD34_2    1188
+## 10 353    ORTHO_2     86
+## # … with 320 more rows
+```
+
+Keep your eyes out for a base R pipe as it is under development at the moment *|&gt;*
+
+---
+class: inverse, center, middle
+
+# Joining tibbles together
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=720px&gt;&lt;/html&gt; 
+
+---
+
+---
+## Joining
+Often you have two dataframes and you want to join them together. Data frames can be joined on a shared variable _a.k.a._ a key. We want this key to be unique i.e. ENTREZ ID. 
+
+---
+## dplyr::inner_join - Merging dataframes
+
+```r
+tidy_counts
+```
+
+```
+## # A tibble: 400 x 5
+##    ENTREZ Sample CellType Rep   counts
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt;
+##  1 350    CD34_1 CD34     1        204
+##  2 351    CD34_1 CD34     1      15586
+##  3 353    CD34_1 CD34     1        842
+##  4 354    CD34_1 CD34     1          0
+##  5 355    CD34_1 CD34     1        123
+##  6 356    CD34_1 CD34     1          1
+##  7 357    CD34_1 CD34     1        380
+##  8 358    CD34_1 CD34     1        572
+##  9 359    CD34_1 CD34     1          0
+## 10 360    CD34_1 CD34     1        320
+## # … with 390 more rows
+```
+
+---
+## dplyr::inner_join - Merging dataframes
+
+```r
+counts_metadata
+```
+
+```
+## # A tibble: 23,056 x 3
+##    ID        SYMBOL     LENGTH
+##    &lt;chr&gt;     &lt;chr&gt;       &lt;int&gt;
+##  1 1         A1BG        16043
+##  2 10        NAT2         9969
+##  3 100       ADA         32214
+##  4 1000      CDH2       226516
+##  5 10000     AKT3       355352
+##  6 100008586 GAGE12F     15729
+##  7 100009676 ZBTB11-AS1   2784
+##  8 10001     MED6        16428
+##  9 10002     NR2E3        7704
+## 10 10003     NAALAD2     57962
+## # … with 23,046 more rows
+```
+
+---
+## dplyr::inner_join - Merging dataframes
+
+```r
+tidy_counts_meta &lt;- inner_join(tidy_counts, counts_metadata, by = c("ENTREZ" = "ID"))
+```
+
+---
+## There are many ways to join things
+
+Inner Join 
+
+* Keeps all observations in x and y with matching keys
+
+Outer Join
+
+* A left join keeps all observations in x and those in y with matching keys.
+* A right join keeps all observations in y and those in x with matching keys. 
+* A full join keeps all observations in x and y
+
+---
+
+---
+## dplyr::left_join 
+My tidy_counts tibble is the on the left, so is the backbone for this join. This will only then show the metadata that has a matching key i.e. ENTREZID. 
+
+```r
+left_join(tidy_counts, counts_metadata, by = c("ENTREZ" = "ID"))
+```
+
+```
+## # A tibble: 400 x 7
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1 CD34     1        204 APOH     17410
+##  2 351    CD34_1 CD34     1      15586 APP     290586
+##  3 353    CD34_1 CD34     1        842 APRT      2466
+##  4 354    CD34_1 CD34     1          0 KLK3      5850
+##  5 355    CD34_1 CD34     1        123 FAS      45990
+##  6 356    CD34_1 CD34     1          1 FASLG     7828
+##  7 357    CD34_1 CD34     1        380 SHROOM2 162986
+##  8 358    CD34_1 CD34     1        572 AQP1     72122
+##  9 359    CD34_1 CD34     1          0 AQP2      8141
+## 10 360    CD34_1 CD34     1        320 AQP3      6480
+## # … with 390 more rows
+```
+
+---
+## dplyr::right_join
+Now the counts_metadata tibble is the backbone for this join. Many of the keys (i.e. ENTREZID) in this tibble do not have matches in the tidy_counts_tibble. Anything without a match is filled in with NA. 
+
+```r
+tidy_counts_expressed &lt;- right_join(tidy_counts, counts_metadata, by = c("ENTREZ" = "ID"))
+tidy_counts_expressed %&gt;% tail()
+```
+
+```
+## # A tibble: 6 x 7
+##   ENTREZ Sample CellType Rep   counts SYMBOL   LENGTH
+##   &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;     &lt;int&gt;
+## 1 9990   &lt;NA&gt;   &lt;NA&gt;     &lt;NA&gt;      NA SLC12A6  108069
+## 2 9991   &lt;NA&gt;   &lt;NA&gt;     &lt;NA&gt;      NA PTBP3    115950
+## 3 9992   &lt;NA&gt;   &lt;NA&gt;     &lt;NA&gt;      NA KCNE2      7118
+## 4 9993   &lt;NA&gt;   &lt;NA&gt;     &lt;NA&gt;      NA DGCR2     86173
+## 5 9994   &lt;NA&gt;   &lt;NA&gt;     &lt;NA&gt;      NA CASP8AP2  44537
+## 6 9997   &lt;NA&gt;   &lt;NA&gt;     &lt;NA&gt;      NA SCO2       2909
+```
+
+---
+## Filtering joins
+
+Filtering joins 
+
+* A semi join only keeps all observations in x that are matched in y. y isn't returned. 
+* A anti join only keeps all observations in x that are _not_ matched in y. y isn't returned. 
+
+---
+## dplyr::semi_join
+Semi join only keeps observations in x that are matched in y. y is only used as a reference and is not in output
+
+```r
+semi_join(counts_metadata, tidy_counts, by = c("ID" = "ENTREZ") )
+```
+
+```
+## # A tibble: 100 x 3
+##    ID    SYMBOL  LENGTH
+##    &lt;chr&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 350   APOH     17410
+##  2 351   APP     290586
+##  3 353   APRT      2466
+##  4 354   KLK3      5850
+##  5 355   FAS      45990
+##  6 356   FASLG     7828
+##  7 357   SHROOM2 162986
+##  8 358   AQP1     72122
+##  9 359   AQP2      8141
+## 10 360   AQP3      6480
+## # … with 90 more rows
+```
+
+---
+## dplyr::anti_join
+Anti join only keeps observations in x that are not matched in y. y is only used as a reference and is not in output
+
+```r
+anti_join(counts_metadata, tidy_counts, by = c("ID" = "ENTREZ") )
+```
+
+```
+## # A tibble: 22,956 x 3
+##    ID        SYMBOL     LENGTH
+##    &lt;chr&gt;     &lt;chr&gt;       &lt;int&gt;
+##  1 1         A1BG        16043
+##  2 10        NAT2         9969
+##  3 100       ADA         32214
+##  4 1000      CDH2       226516
+##  5 10000     AKT3       355352
+##  6 100008586 GAGE12F     15729
+##  7 100009676 ZBTB11-AS1   2784
+##  8 10001     MED6        16428
+##  9 10002     NR2E3        7704
+## 10 10003     NAALAD2     57962
+## # … with 22,946 more rows
+```
+
+
+---
+class: inverse, center, middle
+
+# Quick manipulate data with dplyr
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=720px&gt;&lt;/html&gt; 
+
+---
+
+---
+## dplyr
+This package contains a variety of tools to access and manipulate dataframes.  
+
+They have a common rationale:
+
+![dplyr](./imgs/dplyr.png)
+
+---
+## dplyr::select
+**select** allows you to work with the columns in your tibble. 
+At its most basic **select** allows you to make a vector from a specific variable
+
+```r
+select(tidy_counts_meta , counts)
+```
+
+```
+## # A tibble: 400 x 1
+##    counts
+##     &lt;int&gt;
+##  1    204
+##  2  15586
+##  3    842
+##  4      0
+##  5    123
+##  6      1
+##  7    380
+##  8    572
+##  9      0
+## 10    320
+## # … with 390 more rows
+```
+
+---
+## dplyr::select
+**select** allows you to make a dataframe from several variables
+
+```r
+select(tidy_counts_meta, counts, ENTREZ)
+```
+
+```
+## # A tibble: 400 x 2
+##    counts ENTREZ
+##     &lt;int&gt; &lt;chr&gt; 
+##  1    204 350   
+##  2  15586 351   
+##  3    842 353   
+##  4      0 354   
+##  5    123 355   
+##  6      1 356   
+##  7    380 357   
+##  8    572 358   
+##  9      0 359   
+## 10    320 360   
+## # … with 390 more rows
+```
+
+---
+## dplyr::select
+**select** allows you to make a dataframe excluding a variable
+
+```r
+select(tidy_counts_meta, -Sample)
+```
+
+```
+## # A tibble: 400 x 6
+##    ENTREZ CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34     1        204 APOH     17410
+##  2 351    CD34     1      15586 APP     290586
+##  3 353    CD34     1        842 APRT      2466
+##  4 354    CD34     1          0 KLK3      5850
+##  5 355    CD34     1        123 FAS      45990
+##  6 356    CD34     1          1 FASLG     7828
+##  7 357    CD34     1        380 SHROOM2 162986
+##  8 358    CD34     1        572 AQP1     72122
+##  9 359    CD34     1          0 AQP2      8141
+## 10 360    CD34     1        320 AQP3      6480
+## # … with 390 more rows
+```
+
+---
+## dplyr::select
+**select** allows you to make a dataframe from a range of variables
+
+```r
+select(tidy_counts_meta, CellType:SYMBOL)
+```
+
+```
+## # A tibble: 400 x 4
+##    CellType Rep   counts SYMBOL 
+##    &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;  
+##  1 CD34     1        204 APOH   
+##  2 CD34     1      15586 APP    
+##  3 CD34     1        842 APRT   
+##  4 CD34     1          0 KLK3   
+##  5 CD34     1        123 FAS    
+##  6 CD34     1          1 FASLG  
+##  7 CD34     1        380 SHROOM2
+##  8 CD34     1        572 AQP1   
+##  9 CD34     1          0 AQP2   
+## 10 CD34     1        320 AQP3   
+## # … with 390 more rows
+```
+
+---
+## dplyr::filter
+**filter** allows you to work with the rows in your tibble. 
+Through __filter__ you can access observations based on criteria that produces a logical.
+
+```r
+filter(tidy_counts_meta, Sample == 'CD34_1')
+```
+
+```
+## # A tibble: 100 x 7
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1 CD34     1        204 APOH     17410
+##  2 351    CD34_1 CD34     1      15586 APP     290586
+##  3 353    CD34_1 CD34     1        842 APRT      2466
+##  4 354    CD34_1 CD34     1          0 KLK3      5850
+##  5 355    CD34_1 CD34     1        123 FAS      45990
+##  6 356    CD34_1 CD34     1          1 FASLG     7828
+##  7 357    CD34_1 CD34     1        380 SHROOM2 162986
+##  8 358    CD34_1 CD34     1        572 AQP1     72122
+##  9 359    CD34_1 CD34     1          0 AQP2      8141
+## 10 360    CD34_1 CD34     1        320 AQP3      6480
+## # … with 90 more rows
+```
+
+---
+## dplyr::filter
+Here we use __filter__ to access observations based on several criteria.
+
+```r
+filter(tidy_counts_meta, Sample %in% c('CD34_1', 'ORTHO_1'))
+```
+
+```
+## # A tibble: 200 x 7
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1 CD34     1        204 APOH     17410
+##  2 351    CD34_1 CD34     1      15586 APP     290586
+##  3 353    CD34_1 CD34     1        842 APRT      2466
+##  4 354    CD34_1 CD34     1          0 KLK3      5850
+##  5 355    CD34_1 CD34     1        123 FAS      45990
+##  6 356    CD34_1 CD34     1          1 FASLG     7828
+##  7 357    CD34_1 CD34     1        380 SHROOM2 162986
+##  8 358    CD34_1 CD34     1        572 AQP1     72122
+##  9 359    CD34_1 CD34     1          0 AQP2      8141
+## 10 360    CD34_1 CD34     1        320 AQP3      6480
+## # … with 190 more rows
+```
+
+
+---
+## dplyr::filter
+Similarly we can use __Filter__ to access observations based on numerical operators
+
+```r
+filter(tidy_counts_meta, counts &gt; 0)
+```
+
+```
+## # A tibble: 330 x 7
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1 CD34     1        204 APOH     17410
+##  2 351    CD34_1 CD34     1      15586 APP     290586
+##  3 353    CD34_1 CD34     1        842 APRT      2466
+##  4 355    CD34_1 CD34     1        123 FAS      45990
+##  5 356    CD34_1 CD34     1          1 FASLG     7828
+##  6 357    CD34_1 CD34     1        380 SHROOM2 162986
+##  7 358    CD34_1 CD34     1        572 AQP1     72122
+##  8 360    CD34_1 CD34     1        320 AQP3      6480
+##  9 362    CD34_1 CD34     1          3 AQP5      4187
+## 10 363    CD34_1 CD34     1         14 AQP6      9946
+## # … with 320 more rows
+```
+
+
+---
+## dplyr::arrange
+_Arrange_ sorts the dataframe based on a specific variable, in ascending order. 
+
+```r
+arrange(tidy_counts_meta, counts)
+```
+
+```
+## # A tibble: 400 x 7
+##    ENTREZ Sample  CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 354    CD34_1  CD34     1          0 KLK3      5850
+##  2 359    CD34_1  CD34     1          0 AQP2      8141
+##  3 361    CD34_1  CD34     1          0 AQP4     13709
+##  4 398    CD34_1  CD34     1          0 ARHGDIG   2763
+##  5 401    CD34_1  CD34     1          0 PHOX2A    5100
+##  6 417    CD34_1  CD34     1          0 ART1     19286
+##  7 429    CD34_1  CD34     1          0 ASCL1     2843
+##  8 474    CD34_1  CD34     1          0 ATOH1     1065
+##  9 495    CD34_1  CD34     1          0 ATP4A    13466
+## 10 350    ORTHO_1 ORTHO    1          0 APOH     17410
+## # … with 390 more rows
+```
+
+---
+## dplyr::arrange
+_Arrange_ can sort based on multiple variables using the order provided. We can also use the desc() function to change the order to descending.  
+
+```r
+arrange(tidy_counts_meta, CellType, desc(counts))
+```
+
+```
+## # A tibble: 400 x 7
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 351    CD34_1 CD34     1      15586 APP     290586
+##  2 397    CD34_1 CD34     1      12997 ARHGDIB  19613
+##  3 388    CD34_1 CD34     1      12598 RHOB      2367
+##  4 397    CD34_2 CD34     2      11265 ARHGDIB  19613
+##  5 351    CD34_2 CD34     2      10476 APP     290586
+##  6 387    CD34_1 CD34     1       8899 RHOA     52948
+##  7 468    CD34_1 CD34     1       7991 ATF4      2123
+##  8 387    CD34_2 CD34     2       7405 RHOA     52948
+##  9 396    CD34_1 CD34     1       6503 ARHGDIA   3686
+## 10 468    CD34_2 CD34     2       5307 ATF4      2123
+## # … with 390 more rows
+```
+
+---
+## dplyr::mutate
+_Mutate_ creates a new column based on some form of computation. Here we are adding a z-score for the counts. 
+
+```r
+mutate(tidy_counts_meta, scale(counts))
+```
+
+```
+## # A tibble: 400 x 8
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH `scale(counts)`[,1]
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;               &lt;dbl&gt;
+##  1 350    CD34_1 CD34     1        204 APOH     17410             -0.354 
+##  2 351    CD34_1 CD34     1      15586 APP     290586              7.19  
+##  3 353    CD34_1 CD34     1        842 APRT      2466             -0.0414
+##  4 354    CD34_1 CD34     1          0 KLK3      5850             -0.454 
+##  5 355    CD34_1 CD34     1        123 FAS      45990             -0.394 
+##  6 356    CD34_1 CD34     1          1 FASLG     7828             -0.454 
+##  7 357    CD34_1 CD34     1        380 SHROOM2 162986             -0.268 
+##  8 358    CD34_1 CD34     1        572 AQP1     72122             -0.174 
+##  9 359    CD34_1 CD34     1          0 AQP2      8141             -0.454 
+## 10 360    CD34_1 CD34     1        320 AQP3      6480             -0.298 
+## # … with 390 more rows
+```
+
+---
+## dplyr::mutate
+_Mutate_  can be used to create a named variable in much the same way. 
+
+```r
+mutate(tidy_counts_meta, count_zscore = scale(counts))
+```
+
+```
+## # A tibble: 400 x 8
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH count_zscore[,1]
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;            &lt;dbl&gt;
+##  1 350    CD34_1 CD34     1        204 APOH     17410          -0.354 
+##  2 351    CD34_1 CD34     1      15586 APP     290586           7.19  
+##  3 353    CD34_1 CD34     1        842 APRT      2466          -0.0414
+##  4 354    CD34_1 CD34     1          0 KLK3      5850          -0.454 
+##  5 355    CD34_1 CD34     1        123 FAS      45990          -0.394 
+##  6 356    CD34_1 CD34     1          1 FASLG     7828          -0.454 
+##  7 357    CD34_1 CD34     1        380 SHROOM2 162986          -0.268 
+##  8 358    CD34_1 CD34     1        572 AQP1     72122          -0.174 
+##  9 359    CD34_1 CD34     1          0 AQP2      8141          -0.454 
+## 10 360    CD34_1 CD34     1        320 AQP3      6480          -0.298 
+## # … with 390 more rows
+```
+
+
+---
+## dplyr::summarize
+_Summarize_ applies aggregating or summary function to a group i.e. counting. Lets see how many genes we have no counts for in each sample. First we will generate a table of genes with no counts. 
+
+
+```r
+filter(tidy_counts_meta, counts == 0)
+```
+
+```
+## # A tibble: 70 x 7
+##    ENTREZ Sample  CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 354    CD34_1  CD34     1          0 KLK3      5850
+##  2 359    CD34_1  CD34     1          0 AQP2      8141
+##  3 361    CD34_1  CD34     1          0 AQP4     13709
+##  4 398    CD34_1  CD34     1          0 ARHGDIG   2763
+##  5 401    CD34_1  CD34     1          0 PHOX2A    5100
+##  6 417    CD34_1  CD34     1          0 ART1     19286
+##  7 429    CD34_1  CD34     1          0 ASCL1     2843
+##  8 474    CD34_1  CD34     1          0 ATOH1     1065
+##  9 495    CD34_1  CD34     1          0 ATP4A    13466
+## 10 350    ORTHO_1 ORTHO    1          0 APOH     17410
+## # … with 60 more rows
+```
+
+---
+## dplyr::summarize
+Now we have some data to play with, we do the first key step in summarization: group_by. This adds the *Group* property. When we summarize it will be within these groups i.e. in this case its within Sample. 
+
+
+```r
+filter(tidy_counts_meta, counts == 0) %&gt;%
+  group_by(Sample) 
+```
+
+```
+## # A tibble: 70 x 7
+## # Groups:   Sample [4]
+##    ENTREZ Sample  CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 354    CD34_1  CD34     1          0 KLK3      5850
+##  2 359    CD34_1  CD34     1          0 AQP2      8141
+##  3 361    CD34_1  CD34     1          0 AQP4     13709
+##  4 398    CD34_1  CD34     1          0 ARHGDIG   2763
+##  5 401    CD34_1  CD34     1          0 PHOX2A    5100
+##  6 417    CD34_1  CD34     1          0 ART1     19286
+##  7 429    CD34_1  CD34     1          0 ASCL1     2843
+##  8 474    CD34_1  CD34     1          0 ATOH1     1065
+##  9 495    CD34_1  CD34     1          0 ATP4A    13466
+## 10 350    ORTHO_1 ORTHO    1          0 APOH     17410
+## # … with 60 more rows
+```
+
+---
+## dplyr::summarize
+Once the tibble has group information we can then summarize over the these groups. We can use the *n()* function to count how many observations there are for each member of our group, Samples.
+
+
+```r
+filter(tidy_counts_expressed, counts == 0) %&gt;%
+  group_by(Sample) %&gt;%
+  summarise(n())
+```
+
+```
+## # A tibble: 4 x 2
+##   Sample  `n()`
+## * &lt;chr&gt;   &lt;int&gt;
+## 1 CD34_1      9
+## 2 CD34_2      8
+## 3 ORTHO_1    22
+## 4 ORTHO_2    31
+```
+
+---
+## dplyr::summarize
+We can use _Summarize_ to apply more complex aggregating or summary functions i.e. mean. In this case we will calculate the mean gene counts across conditions. 
+
+```r
+tidy_counts_meta %&gt;%
+  group_by(ENTREZ) %&gt;%
+  summarise(counts_mean = mean(counts))
+```
+
+```
+## # A tibble: 100 x 2
+##    ENTREZ counts_mean
+##  * &lt;chr&gt;        &lt;dbl&gt;
+##  1 350          76.8 
+##  2 351        6645   
+##  3 353         618.  
+##  4 354           0   
+##  5 355         142.  
+##  6 356           0.5 
+##  7 357         140   
+##  8 358        1861.  
+##  9 359           3.25
+## 10 360         496.  
+## # … with 90 more rows
+```
+
+---
+## dplyr::summarize
+We can use also use multiple groups, for *group_by*. We can use this to generate a more useful mean; the mean counts in genes per CellType. 
+
+```r
+tidy_counts %&gt;%
+  group_by(ENTREZ, CellType) %&gt;%
+  summarise(counts_mean = mean(counts))
+```
+
+```
+## # A tibble: 200 x 3
+## # Groups:   ENTREZ [100]
+##    ENTREZ CellType counts_mean
+##    &lt;chr&gt;  &lt;chr&gt;          &lt;dbl&gt;
+##  1 350    CD34            154.
+##  2 350    ORTHO             0 
+##  3 351    CD34          13031 
+##  4 351    ORTHO           259 
+##  5 353    CD34           1015 
+##  6 353    ORTHO           220.
+##  7 354    CD34              0 
+##  8 354    ORTHO             0 
+##  9 355    CD34            131 
+## 10 355    ORTHO           154.
+## # … with 190 more rows
+```
+
+---
+## dplyr::group_by
+_Grouping_ can also be used to help filter within groups. Here we use order to get the genes with the top 3 amount of counts.
+
+```r
+tidy_counts_meta %&gt;%
+  group_by(Sample) %&gt;%
+  filter(order(counts, decreasing=T) &lt;= 3)
+```
+
+```
+## # A tibble: 12 x 7
+## # Groups:   Sample [4]
+##    ENTREZ Sample  CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1  CD34     1        204 APOH     17410
+##  2 395    CD34_1  CD34     1        348 ARHGAP6 528159
+##  3 414    CD34_1  CD34     1        516 ARSD     25406
+##  4 388    ORTHO_1 ORTHO    1        171 RHOB      2367
+##  5 392    ORTHO_1 ORTHO    1        304 ARHGAP1  23591
+##  6 471    ORTHO_1 ORTHO    1        771 ATIC     37818
+##  7 351    CD34_2  CD34     2      10476 APP     290586
+##  8 379    CD34_2  CD34     2        181 ARL4D     2152
+##  9 417    CD34_2  CD34     2          0 ART1     19286
+## 10 390    ORTHO_2 ORTHO    2          0 RND3     19503
+## 11 398    ORTHO_2 ORTHO    2          0 ARHGDIG   2763
+## 12 443    ORTHO_2 ORTHO    2          0 ASPA     25297
+```
+
+---
+## dplyr::group_by
+We can stitch this together to do more complicated operations. In this case I am filtering to observations without 0 counts. I then am grouping by CellType and ENTREZ.
+
+```r
+tidy_counts_meta %&gt;% 
+  filter(counts != 0) %&gt;% 
+  group_by(CellType, ENTREZ)
+```
+
+```
+## # A tibble: 330 x 7
+## # Groups:   CellType, ENTREZ [174]
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1 CD34     1        204 APOH     17410
+##  2 351    CD34_1 CD34     1      15586 APP     290586
+##  3 353    CD34_1 CD34     1        842 APRT      2466
+##  4 355    CD34_1 CD34     1        123 FAS      45990
+##  5 356    CD34_1 CD34     1          1 FASLG     7828
+##  6 357    CD34_1 CD34     1        380 SHROOM2 162986
+##  7 358    CD34_1 CD34     1        572 AQP1     72122
+##  8 360    CD34_1 CD34     1        320 AQP3      6480
+##  9 362    CD34_1 CD34     1          3 AQP5      4187
+## 10 363    CD34_1 CD34     1         14 AQP6      9946
+## # … with 320 more rows
+```
+
+---
+## dplyr::group_by
+
+Now that they are grouped by CellType and ENTREZ, we can filter for all genes that have counts greater than 0, in both replicates.
+
+```r
+tidy_counts_meta %&gt;% 
+  filter(counts != 0) %&gt;% 
+  group_by(CellType, ENTREZ) %&gt;%  
+  filter(n()&gt;1)
+```
+
+```
+## # A tibble: 312 x 7
+## # Groups:   CellType, ENTREZ [156]
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 350    CD34_1 CD34     1        204 APOH     17410
+##  2 351    CD34_1 CD34     1      15586 APP     290586
+##  3 353    CD34_1 CD34     1        842 APRT      2466
+##  4 355    CD34_1 CD34     1        123 FAS      45990
+##  5 357    CD34_1 CD34     1        380 SHROOM2 162986
+##  6 358    CD34_1 CD34     1        572 AQP1     72122
+##  7 360    CD34_1 CD34     1        320 AQP3      6480
+##  8 362    CD34_1 CD34     1          3 AQP5      4187
+##  9 363    CD34_1 CD34     1         14 AQP6      9946
+## 10 364    CD34_1 CD34     1          7 AQP7     17570
+## # … with 302 more rows
+```
+
+---
+## Piping and plots
+
+By now it is clear how useful pipes can be, to stitch together the different operations. These pipes can go straight into plots. Here we make a simple X-Y plot to compare counts in our cell types. 
+
+
+```r
+p &lt;- tidy_counts_meta %&gt;%
+  group_by(ENTREZ, CellType) %&gt;%
+  summarise(counts_mean = mean(counts)) %&gt;% 
+  pivot_wider(names_from=CellType, values_from=counts_mean) %&gt;%
+  ggplot(aes(x=CD34, y=ORTHO)) + geom_point()
+```
+
+---
+## Piping and plots
+
+By now it is clear how useful pipes can be, to stitch together the different operations. These pipes can go straight into plots. Here we make a simple X-Y plot to compare counts in our cell types. 
+
+
+```r
+p 
+```
+
+![](Session1_files/figure-html/unnamed-chunk-66-1.png)&lt;!-- --&gt;
+
+---
+class: inverse, center, middle
+
+# Outputting your tidy data
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=720px&gt;&lt;/html&gt; 
+
+---
+
+
+---
+# Readr again: Writing out 
+You've made a lovely new tibble file. Now you need to save it somewhere. Theres a wide range of writing  options. Can specify the delmiter directly or use a specific function
+
+```r
+write_delim(tidy_counts_meta, '../counts_with_metadata.csv', delim =',')
+
+write_csv(tidy_counts_meta, '../counts_with_metadata.csv')
+```
+
+A key difference compared to base is that it does not write out row names. Tibbles generally don't have rownames.
+
+
+---
+class: inverse, center, middle
+
+# Pattern matching with strings
+
+&lt;html&gt;&lt;div style='float:left'&gt;&lt;/div&gt;&lt;hr color='#EB811B' size=1px width=720px&gt;&lt;/html&gt; 
+
+---
+
+---
+## stringr
+
+If the data you are working with involves characters from data entry often there will be errors i.e. clinical study metadata or a hand-typed list of genes of interest. Tidying data also means fixing these problems. stringr helps make this easy. 
+
+* Access and manipulate characters
+* Deal with whitespace
+* Pattern Recognition
+
+Though stringr is pretty comprehensive and covers most of what you will need, there is a sister package called stringi with even more functionality. 
+
+---
+## stringr::strsub
+Many overlapping functions with base for combining, subsetting, converting and finding strings.
+
+Extract substrings from a range. Here the 1st to 3rd character.
+
+```r
+brc &lt;- c("Tom", "Ji-Dung", "Matthew", "Wei", "Doug")
+
+
+brc %&gt;% str_sub(1, 3)
+```
+
+```
+## [1] "Tom" "Ji-" "Mat" "Wei" "Dou"
+```
+
+Extract substrings from a range. Here the 2nd to 2nd to last character
+
+```r
+brc %&gt;% str_sub(2, -2)
+```
+
+```
+## [1] "o"     "i-Dun" "atthe" "e"     "ou"
+```
+
+Assign values back to substrings. Here the 2nd to 2nd to last character is replaced with X.
+
+```r
+str_sub(brc, 2, -2) &lt;- 'X'
+brc
+```
+
+```
+## [1] "TXm" "JXg" "MXw" "WXi" "DXg"
+```
+
+
+## Replacing Strings
+It is easy to replace specific strings with *str_replace_all*.
+
+```r
+str_replace_all(brc, 'Matthew', 'Matt')
+```
+
+```
+## [1] "TXm" "JXg" "MXw" "WXi" "DXg"
+```
+
+```r
+str_replace_all(brc, 'u', 'z' )
+```
+
+```
+## [1] "TXm" "JXg" "MXw" "WXi" "DXg"
+```
+
+
+---
+## Stripping whitespace
+
+Whitespace is often an issue for conssitent metadata. WE can use the *str_replace_all* function to remove whitespace. 
+
+```r
+brc2 &lt;- c("Tom  ", "  Ji  -Dung", "Matt   ", "Wei", "D o u g")
+
+str_replace_all(brc2, ' ','' )
+```
+
+```
+## [1] "Tom"     "Ji-Dung" "Matt"    "Wei"     "Doug"
+```
+
+Rather then replacing all whitespace, you can trim trailing and leading whitespace from strings. 
+
+
+```r
+str_trim(brc2)
+```
+
+```
+## [1] "Tom"       "Ji  -Dung" "Matt"      "Wei"       "D o u g"
+```
+
+
+Can add whitespace to strings to get consistent length. Here all are 10 characters
+
+```r
+str_pad(brc2, width=10, side='left')
+```
+
+```
+## [1] "     Tom  "  "  Ji  -Dung" "   Matt   "  "       Wei"  "   D o u g"
+```
+
+---
+## stringr::str\_to\_* - Capitalization
+Often when manipulating strings we will also need to alter the capitalization. A common case is if we want to do a quick and easy conversion between gene symbol nomenclature. 
+
+```r
+tidy_counts_meta %&gt;% 
+  pull(SYMBOL) %&gt;%
+  head()
+```
+
+```
+## [1] "APOH"  "APP"   "APRT"  "KLK3"  "FAS"   "FASLG"
+```
+
+```r
+tidy_counts_meta %&gt;% 
+  pull(SYMBOL) %&gt;% 
+  str_to_title() %&gt;% 
+  head()
+```
+
+```
+## [1] "Apoh"  "App"   "Aprt"  "Klk3"  "Fas"   "Faslg"
+```
+
+---
+## stringr::str\_to\_* - Capitalization 
+String manipulation can be used with tibbles and mutate.
+
+
+```r
+tidy_counts_meta %&gt;% 
+  mutate(SYMBOL2 = str_to_title(SYMBOL))
+```
+
+```
+## # A tibble: 400 x 8
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH SYMBOL2
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;  
+##  1 350    CD34_1 CD34     1        204 APOH     17410 Apoh   
+##  2 351    CD34_1 CD34     1      15586 APP     290586 App    
+##  3 353    CD34_1 CD34     1        842 APRT      2466 Aprt   
+##  4 354    CD34_1 CD34     1          0 KLK3      5850 Klk3   
+##  5 355    CD34_1 CD34     1        123 FAS      45990 Fas    
+##  6 356    CD34_1 CD34     1          1 FASLG     7828 Faslg  
+##  7 357    CD34_1 CD34     1        380 SHROOM2 162986 Shroom2
+##  8 358    CD34_1 CD34     1        572 AQP1     72122 Aqp1   
+##  9 359    CD34_1 CD34     1          0 AQP2      8141 Aqp2   
+## 10 360    CD34_1 CD34     1        320 AQP3      6480 Aqp3   
+## # … with 390 more rows
+```
+---
+## stringr::str\_to\_* - Capitalization
+We can convert back to capitals, just as easy.
+
+```r
+tidy_counts_meta %&gt;% 
+  mutate(SYMBOL2 = str_to_title(SYMBOL)) %&gt;% 
+  mutate(SYMBOL3 = str_to_upper(SYMBOL2))
+```
+
+```
+## # A tibble: 400 x 9
+##    ENTREZ Sample CellType Rep   counts SYMBOL  LENGTH SYMBOL2 SYMBOL3
+##    &lt;chr&gt;  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt; &lt;chr&gt;   &lt;chr&gt;  
+##  1 350    CD34_1 CD34     1        204 APOH     17410 Apoh    APOH   
+##  2 351    CD34_1 CD34     1      15586 APP     290586 App     APP    
+##  3 353    CD34_1 CD34     1        842 APRT      2466 Aprt    APRT   
+##  4 354    CD34_1 CD34     1          0 KLK3      5850 Klk3    KLK3   
+##  5 355    CD34_1 CD34     1        123 FAS      45990 Fas     FAS    
+##  6 356    CD34_1 CD34     1          1 FASLG     7828 Faslg   FASLG  
+##  7 357    CD34_1 CD34     1        380 SHROOM2 162986 Shroom2 SHROOM2
+##  8 358    CD34_1 CD34     1        572 AQP1     72122 Aqp1    AQP1   
+##  9 359    CD34_1 CD34     1          0 AQP2      8141 Aqp2    AQP2   
+## 10 360    CD34_1 CD34     1        320 AQP3      6480 Aqp3    AQP3   
+## # … with 390 more rows
+```
+
+---
+## Finding patterns with stringr
+ 
+Find patterns in different ways. *str_detect* gives a T/F whether the pattern 'GAP' is present in vector.
+
+```r
+tidy_counts_meta %&gt;% 
+  pull(SYMBOL) %&gt;% 
+  str_detect('GAP') %&gt;% head()
+```
+
+```
+## [1] FALSE FALSE FALSE FALSE FALSE FALSE
+```
+
+```r
+tidy_counts_meta %&gt;% 
+  pull(SYMBOL) %&gt;% 
+  str_detect('GAP') %&gt;%
+  filter(tidy_counts_meta, .)
+```
+
+```
+## # A tibble: 16 x 7
+##    ENTREZ Sample  CellType Rep   counts SYMBOL  LENGTH
+##    &lt;chr&gt;  &lt;chr&gt;   &lt;chr&gt;    &lt;chr&gt;  &lt;int&gt; &lt;chr&gt;    &lt;int&gt;
+##  1 392    CD34_1  CD34     1       1527 ARHGAP1  23591
+##  2 393    CD34_1  CD34     1       2949 ARHGAP4  18885
+##  3 394    CD34_1  CD34     1       1525 ARHGAP5  82746
+##  4 395    CD34_1  CD34     1        348 ARHGAP6 528159
+##  5 392    ORTHO_1 ORTHO    1        304 ARHGAP1  23591
+##  6 393    ORTHO_1 ORTHO    1        138 ARHGAP4  18885
+##  7 394    ORTHO_1 ORTHO    1        464 ARHGAP5  82746
+##  8 395    ORTHO_1 ORTHO    1         67 ARHGAP6 528159
+##  9 392    CD34_2  CD34     2        786 ARHGAP1  23591
+## 10 393    CD34_2  CD34     2       1540 ARHGAP4  18885
+## 11 394    CD34_2  CD34     2       1062 ARHGAP5  82746
+## 12 395    CD34_2  CD34     2        123 ARHGAP6 528159
+## 13 392    ORTHO_2 ORTHO    2         71 ARHGAP1  23591
+## 14 393    ORTHO_2 ORTHO    2          3 ARHGAP4  18885
+## 15 394    ORTHO_2 ORTHO    2        134 ARHGAP5  82746
+## 16 395    ORTHO_2 ORTHO    2          0 ARHGAP6 528159
+```
+
+---
+## Finding patterns with stringr
+
+*str_subset* is similar to detect, but it returns the match itself.
+
+
+```r
+tidy_counts_meta %&gt;% 
+  pull(SYMBOL) %&gt;% 
+  str_subset('GAP')
+```
+
+```
+##  [1] "ARHGAP1" "ARHGAP4" "ARHGAP5" "ARHGAP6" "ARHGAP1" "ARHGAP4" "ARHGAP5"
+##  [8] "ARHGAP6" "ARHGAP1" "ARHGAP4" "ARHGAP5" "ARHGAP6" "ARHGAP1" "ARHGAP4"
+## [15] "ARHGAP5" "ARHGAP6"
+```
+
+---
+## Finding patterns with stringr
+
+Count gives you the total number of times your pattern appears in each character in the vector.
+
+
+```r
+tidy_counts_meta %&gt;% 
+  pull(SYMBOL) %&gt;% 
+  str_count('GAP')
+```
+
+```
+##   [1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1
+##  [38] 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+##  [75] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [112] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0
+## [149] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [186] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [223] 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [260] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [297] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [334] 0 1 1 1 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+## [371] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+```
+
+```r
+tidy_counts_meta %&gt;% 
+  pull(SYMBOL) %&gt;% 
+  str_count('A')
+```
+
+```
+##   [1] 1 1 1 0 1 1 0 1 1 1 1 1 1 1 1 1 1 2 1 0 1 1 1 1 1 1 1 1 1 1 0 0 0 0 2 2 2
+##  [38] 2 2 1 1 0 1 1 1 1 1 1 1 1 1 2 1 0 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 2 1 1 1 0
+##  [75] 0 1 1 1 1 1 0 1 1 2 2 2 2 2 1 1 1 0 2 2 2 1 1 1 1 2 1 1 1 0 1 1 0 1 1 1 1
+## [112] 1 1 1 1 1 1 2 1 0 1 1 1 1 1 1 1 1 1 1 0 0 0 0 2 2 2 2 2 1 1 0 1 1 1 1 1 1
+## [149] 1 1 1 2 1 0 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 2 1 1 1 0 0 1 1 1 1 1 0 1 1 2 2
+## [186] 2 2 2 1 1 1 0 2 2 2 1 1 1 1 2 1 1 1 0 1 1 0 1 1 1 1 1 1 1 1 1 1 2 1 0 1 1
+## [223] 1 1 1 1 1 1 1 1 0 0 0 0 2 2 2 2 2 1 1 0 1 1 1 1 1 1 1 1 1 2 1 0 1 1 1 1 1
+## [260] 1 1 2 1 1 1 1 1 1 1 2 1 1 1 0 0 1 1 1 1 1 0 1 1 2 2 2 2 2 1 1 1 0 2 2 2 1
+## [297] 1 1 1 2 1 1 1 0 1 1 0 1 1 1 1 1 1 1 1 1 1 2 1 0 1 1 1 1 1 1 1 1 1 1 0 0 0
+## [334] 0 2 2 2 2 2 1 1 0 1 1 1 1 1 1 1 1 1 2 1 0 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 2
+## [371] 1 1 1 0 0 1 1 1 1 1 0 1 1 2 2 2 2 2 1 1 1 0 2 2 2 1 1 1 1 2
+```
+
+
+---
+## Tidy beyond this
+
+Hadley Wickham (Chief Scientist at RStudio) is the driving force behind the tidyverse. HE is a good place to start at to get an idea of the future of tidy.   
+
+Hadley wrote a paper about why he thinks tidy data is best: www.jstatsoft.org/v59/i10/paper.  
+
+There is a lot of support for all things tidy at: https://www.tidyverse.org/  
+(This includes really great cheat sheets for each tool)
+
+---
+## Tidy packages to check out:
+
+plyranges: dplyr equivalent for working with ranges i.e. Granges
+
+profileplyr: graphical and heatmap outputs for genomics
+
+readxl: This package is very useful when you want to import Excel sheets in R
+
+googledrive: Interact with your googledrive through R
+
+lubridate and hms: Allow managin of calendar and time formats
+
+magrittr: piping tools
+
+broom: helps tidy up standard base function i.e. lm or t.test
+
+tidymodels: A collection of tools for preparing for and validating model functions
+
+---
+## Other Good Resources
+
+ggplot  
+https://rockefelleruniversity.github.io/Plotting_In_R/
+
+R for Data Science text book  
+https://r4ds.had.co.nz/
+
+Data Science with R text book   
+http://garrettgman.github.io/
+
+Biounformatics Shared Training - Intermediate R course   
+https://bioinformatics-core-shared-training.github.io/r-intermediate/
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
