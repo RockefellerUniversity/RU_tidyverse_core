@@ -388,11 +388,11 @@ untidy_counts
 ```
 
 ---
-## Reshape data with gather and spread
+## Reshape data with pivot_longer and pivot_wider
 
 When all the content is in the tibble, but it is in the wrong orientation, tidyr has some tools to move the data around quickly and easily:  
 
-__gather and spread__
+__pivot_longer and pivot_wider__
 
 ---
 ## tidyr::pivot_longer
@@ -408,7 +408,9 @@ tidier_counts
 
 ---
 ## tidyr::pivot_wider
-pivot_wider allows you to go in the oopsite direction to pivot_longer. We can spread single variables over multiple columns.
+pivot_wider allows you to go in the opposite direction to pivot_longer. We can spread single variables over multiple columns.
+
+**This recently replaced a function called spread**
 ```{r}
 pivot_wider(tidier_counts, names_from = c(Sample), values_from = counts)
 ```
@@ -515,8 +517,6 @@ The pattern is similar but now follows a specific logical flow:
 
 ![dplyr](./imgs/dplyr_pipe2.png)
 
-![dplyr](imgs/dplyr_pipe2.png)
-
 ## Piping to string functions together
 This way there are no intermediates and the steps in your data analysis are logical and clear unlike nested code. 
 ```{r}
@@ -571,7 +571,6 @@ if(params$isSlides == "yes"){
 
 ```
 
----
 ## Joining
 Often you have two dataframes and you want to join them together. Data frames can be joined on a shared variable _a.k.a._ a key. We want this key to be unique i.e. ENTREZ ID. 
 
@@ -606,7 +605,6 @@ Outer Join
 * A right join keeps all observations in y and those in x with matching keys. 
 * A full join keeps all observations in x and y
 
----
 
 ---
 ## dplyr::left_join 
@@ -653,7 +651,7 @@ anti_join(counts_metadata, tidy_counts, by = c("ID" = "ENTREZ") )
 if(params$isSlides == "yes"){
   cat("class: inverse, center, middle
 
-# Quick manipulate data with dplyr
+# Quickly manipulate data with dplyr
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=720px></html> 
 
@@ -670,7 +668,7 @@ if(params$isSlides == "yes"){
 
 ```
 
----
+
 ## dplyr
 This package contains a variety of tools to access and manipulate dataframes.  
 
@@ -882,8 +880,7 @@ if(params$isSlides == "yes"){
 ```
 
 
----
-# Readr again: Writing out 
+## Readr again: Writing out 
 You've made a lovely new tibble file. Now you need to save it somewhere. Theres a wide range of writing  options. Can specify the delmiter directly or use a specific function
 ```{r}
 
@@ -917,7 +914,6 @@ if(params$isSlides == "yes"){
 
 ```
 
----
 ## stringr
 
 If the data you are working with involves characters from data entry often there will be errors i.e. clinical study metadata or a hand-typed list of genes of interest. Tidying data also means fixing these problems. stringr helps make this easy. 
@@ -946,6 +942,11 @@ Extract substrings from a range. Here the 2nd to 2nd to last character
 brc %>% str_sub(2, -2)
 ```
 
+---
+## stringr::strsub
+Many overlapping functions with base for combining, subsetting, converting and finding strings.
+
+
 Assign values back to substrings. Here the 2nd to 2nd to last character is replaced with X.
 ```{r}
 
@@ -953,6 +954,7 @@ str_sub(brc, 2, -2) <- 'X'
 brc
 ```
 
+---
 
 ## Replacing Strings
 It is easy to replace specific strings with *str_replace_all*.
@@ -1058,18 +1060,18 @@ Count gives you the total number of times your pattern appears in each character
 
 tidy_counts_meta %>% 
   pull(SYMBOL) %>% 
-  str_count('GAP')
+  str_count('GAP') %>% .[1:100]
 
 tidy_counts_meta %>% 
   pull(SYMBOL) %>% 
-  str_count('A')
+  str_count('A') %>% .[1:100]
 ```
 
 
 ---
 ## Tidy beyond this
 
-Hadley Wickham (Chief Scientist at RStudio) is the driving force behind the tidyverse. HE is a good place to start at to get an idea of the future of tidy.   
+Hadley Wickham (Chief Scientist at RStudio) is the driving force behind the tidyverse. He is a good place to start at to get an idea of the future of tidy.   
 
 Hadley wrote a paper about why he thinks tidy data is best: www.jstatsoft.org/v59/i10/paper.  
 
