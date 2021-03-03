@@ -316,7 +316,7 @@ anti_join(counts_metadata, tidy_counts, by = c("ID" = "ENTREZ") )
 if(params$isSlides == "yes"){
   cat("class: inverse, center, middle
 
-# Quick manipulate data with dplyr
+# Quickly manipulate data with dplyr
 
 <html><div style='float:left'></div><hr color='#EB811B' size=1px width=720px></html> 
 
@@ -575,9 +575,9 @@ tidy_counts_meta %>%
 
 tidy_counts_meta %>% 
   pull(SYMBOL) %>% 
-  str_count('GAP')
+  str_count('GAP') %>% .[1:100]
 
 tidy_counts_meta %>% 
   pull(SYMBOL) %>% 
-  str_count('A')
+  str_count('A') %>% .[1:100]
 
